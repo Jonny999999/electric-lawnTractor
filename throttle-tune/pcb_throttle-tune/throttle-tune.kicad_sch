@@ -3344,12 +3344,6 @@
 		(uuid "83298c87-3fc8-4f79-9d72-3c872e56e848")
 	)
 	(junction
-		(at 172.72 38.1)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "891557fe-2412-4211-84d2-0985fd1daa30")
-	)
-	(junction
 		(at 104.14 109.22)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -4087,16 +4081,6 @@
 	)
 	(wire
 		(pts
-			(xy 172.72 34.29) (xy 172.72 38.1)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "583f57f6-667f-4b7e-b63c-d123cb474f81")
-	)
-	(wire
-		(pts
 			(xy 278.13 45.72) (xy 278.13 49.53)
 		)
 		(stroke
@@ -4517,7 +4501,7 @@
 	)
 	(wire
 		(pts
-			(xy 162.56 38.1) (xy 172.72 38.1)
+			(xy 162.56 38.1) (xy 181.61 38.1)
 		)
 		(stroke
 			(width 0)
@@ -5087,16 +5071,6 @@
 	)
 	(wire
 		(pts
-			(xy 172.72 38.1) (xy 181.61 38.1)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "def85567-2a44-496f-a78c-111b464148c2")
-	)
-	(wire
-		(pts
 			(xy 186.69 68.58) (xy 189.23 68.58)
 		)
 		(stroke
@@ -5413,6 +5387,16 @@
 		)
 		(uuid "0a9adf49-ef98-407f-a5b6-0132c275410f")
 	)
+	(text "TODO: is 5V 3speed-sw and 5V throttle the same from controller? connect them on pcb?"
+		(exclude_from_sim no)
+		(at 181.61 108.204 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "0eb4f4c3-cb7a-4bb9-a00f-8964cb231983")
+	)
 	(text "throttle connectors\n"
 		(exclude_from_sim no)
 		(at 48.768 229.362 0)
@@ -5528,7 +5512,7 @@
 		(uuid "0b582b56-daef-4214-a2f4-bec759e5fa18")
 	)
 	(label "speedSwitch1_slow"
-		(at 226.06 212.09 180)
+		(at 226.06 209.55 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -5583,7 +5567,7 @@
 		(uuid "2e348e02-2d89-4e43-b5cf-3d177ab27c0a")
 	)
 	(label "speedSwitch2_fast"
-		(at 226.06 209.55 180)
+		(at 226.06 212.09 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -5671,7 +5655,7 @@
 		(uuid "53ab0caa-2203-41bf-a4ab-3ae5d953895f")
 	)
 	(label "Throttle-IN-Filtered"
-		(at 222.25 186.69 180)
+		(at 222.25 189.23 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -5770,7 +5754,7 @@
 		(uuid "c2775876-ce70-419a-8197-a0403d28cf15")
 	)
 	(label "Throttle-OUT_sense"
-		(at 222.25 189.23 180)
+		(at 222.25 186.69 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -5820,7 +5804,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "TestPoint"
+		(property "Value" "5V controller"
 			(at 46.99 47.244 0)
 			(effects
 				(font
@@ -5878,7 +5862,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "06b01f3d-b498-49bc-ab1a-a35dc79712a1")
-		(property "Reference" "TP2"
+		(property "Reference" "TP10"
 			(at 297.942 108.966 0)
 			(effects
 				(font
@@ -5887,7 +5871,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "TestPoint"
+		(property "Value" "DAC"
 			(at 302.26 112.2679 0)
 			(effects
 				(font
@@ -5930,7 +5914,7 @@
 		(instances
 			(project "throttle-tune"
 				(path "/54596f3c-134d-419d-8b8d-e3d4fb1ac7e3"
-					(reference "TP2")
+					(reference "TP10")
 					(unit 1)
 				)
 			)
@@ -5938,16 +5922,16 @@
 	)
 	(symbol
 		(lib_id "Connector:Screw_Terminal_01x02")
-		(at 67.31 36.83 0)
+		(at 67.31 39.37 0)
+		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "0939cf0f-b5a1-4130-951b-e6e6952475d9")
 		(property "Reference" "J9"
-			(at 69.85 36.8299 0)
+			(at 69.85 39.3701 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5955,8 +5939,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "Screw_Terminal_01x02"
-			(at 69.85 39.3699 0)
+		(property "Value" "5V/GND"
+			(at 69.85 36.8301 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5965,7 +5949,7 @@
 			)
 		)
 		(property "Footprint" "TerminalBlock:TerminalBlock_bornier-2_P5.08mm"
-			(at 67.31 36.83 0)
+			(at 67.31 39.37 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5974,7 +5958,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 67.31 36.83 0)
+			(at 67.31 39.37 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5983,7 +5967,7 @@
 			)
 		)
 		(property "Description" "Generic screw terminal, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 67.31 36.83 0)
+			(at 67.31 39.37 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6985,7 +6969,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Package_TO_SOT_THT:TO-220F-3_Vertical"
+		(property "Footprint" "Package_TO_SOT_THT:TO-220-3_Vertical"
 			(at 106.68 104.14 0)
 			(effects
 				(font
@@ -7094,79 +7078,6 @@
 			(project "throttle-tune"
 				(path "/54596f3c-134d-419d-8b8d-e3d4fb1ac7e3"
 					(reference "C10")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:Screw_Terminal_01x03")
-		(at 299.72 219.71 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "2b0e9f40-3bd4-4796-bdff-f0197e12fd02")
-		(property "Reference" "J6"
-			(at 303.53 218.4399 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "UART"
-			(at 303.53 220.9799 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "TerminalBlock:TerminalBlock_bornier-2_P5.08mm"
-			(at 299.72 219.71 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 299.72 219.71 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Generic screw terminal, single row, 01x03, script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 299.72 219.71 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "e0f2e333-d0f1-4e47-8fca-439ec2a389f3")
-		)
-		(pin "2"
-			(uuid "e39c20e8-66cc-4019-baeb-772ba5fa3434")
-		)
-		(pin "3"
-			(uuid "4fe27d6e-d707-49cc-a7db-e22e7146cc1f")
-		)
-		(instances
-			(project ""
-				(path "/54596f3c-134d-419d-8b8d-e3d4fb1ac7e3"
-					(reference "J6")
 					(unit 1)
 				)
 			)
@@ -7857,7 +7768,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "TestPoint"
+		(property "Value" "GND"
 			(at 46.99 32.766 0)
 			(effects
 				(font
@@ -8331,7 +8242,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Connector_PinHeader_1.00mm:PinHeader_1x02_P1.00mm_Vertical"
+		(property "Footprint" "Jumper_AKL:Jumper_P2.54mm_D0.7mm"
 			(at 119.38 101.6 0)
 			(effects
 				(font
@@ -8664,6 +8575,7 @@
 	(symbol
 		(lib_id "Connector:Screw_Terminal_01x03")
 		(at 85.09 242.57 0)
+		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -8671,20 +8583,19 @@
 		(dnp no)
 		(uuid "6c55d169-a6c5-4f99-a743-4c8e727ed733")
 		(property "Reference" "J3"
-			(at 85.09 248.158 0)
+			(at 85.09 236.982 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Value" "Screw_Terminal_01x03"
-			(at 86.106 248.412 0)
+		(property "Value" "throttle-out"
+			(at 85.852 247.396 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(hide yes)
 			)
 		)
 		(property "Footprint" "TerminalBlock:TerminalBlock_bornier-3_P5.08mm"
@@ -8948,7 +8859,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "TestPoint"
+		(property "Value" "Throttle-Out"
 			(at 344.17 107.1879 0)
 			(effects
 				(font
@@ -9085,7 +8996,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "TestPoint"
+		(property "Value" "PWM"
 			(at 247.65 107.696 0)
 			(effects
 				(font
@@ -9349,7 +9260,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "TestPoint"
+		(property "Value" "9V"
 			(at 31.75 47.244 0)
 			(effects
 				(font
@@ -9577,7 +9488,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "Connector_PinHeader_1.00mm:PinHeader_1x03_P1.00mm_Vertical"
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical"
 			(at 299.72 209.55 0)
 			(effects
 				(font
@@ -9639,7 +9550,7 @@
 				)
 			)
 		)
-		(property "Value" "Screw_Terminal_01x03"
+		(property "Value" "3speedSw-in"
 			(at 156.464 34.798 0)
 			(effects
 				(font
@@ -9695,7 +9606,8 @@
 	)
 	(symbol
 		(lib_id "Connector:Screw_Terminal_01x02")
-		(at 49.53 104.14 180)
+		(at 49.53 101.6 0)
+		(mirror y)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -9703,7 +9615,7 @@
 		(dnp no)
 		(uuid "9d538d24-832a-4ef5-ae19-111d42612428")
 		(property "Reference" "J10"
-			(at 46.228 95.758 0)
+			(at 48.006 97.79 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9711,7 +9623,7 @@
 			)
 		)
 		(property "Value" "9V supply / small battery"
-			(at 47.498 98.298 0)
+			(at 46.736 95.758 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9719,7 +9631,7 @@
 			)
 		)
 		(property "Footprint" "TerminalBlock:TerminalBlock_bornier-2_P5.08mm"
-			(at 49.53 104.14 0)
+			(at 49.53 101.6 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9728,7 +9640,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 49.53 104.14 0)
+			(at 49.53 101.6 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9737,7 +9649,7 @@
 			)
 		)
 		(property "Description" "Generic screw terminal, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 49.53 104.14 0)
+			(at 49.53 101.6 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10027,6 +9939,7 @@
 	(symbol
 		(lib_id "Connector:Screw_Terminal_01x03")
 		(at 186.69 40.64 0)
+		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -10034,15 +9947,15 @@
 		(dnp no)
 		(uuid "a9f9d1be-f305-4ce6-b5a1-528f4532b65e")
 		(property "Reference" "J4"
-			(at 186.69 46.228 0)
+			(at 186.69 35.052 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Value" "Screw_Terminal_01x03"
-			(at 187.706 46.482 0)
+		(property "Value" "3speedSw-out"
+			(at 187.706 34.798 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10659,13 +10572,12 @@
 				)
 			)
 		)
-		(property "Value" "Screw_Terminal_01x03"
-			(at 39.624 236.728 0)
+		(property "Value" "gas-pedal-in"
+			(at 40.64 247.396 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(hide yes)
 			)
 		)
 		(property "Footprint" "TerminalBlock:TerminalBlock_bornier-3_P5.08mm"
@@ -11544,7 +11456,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal"
+		(property "Footprint" "Potentiometer_THT:Potentiometer_Piher_PT-10-V10_Vertical"
 			(at 298.45 45.72 0)
 			(effects
 				(font

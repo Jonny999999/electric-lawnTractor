@@ -4,6 +4,12 @@
 	(generator_version "8.0")
 	(uuid "54596f3c-134d-419d-8b8d-e3d4fb1ac7e3")
 	(paper "A3")
+	(title_block
+		(title "Throttle-Tune")
+		(date "2024-08-15")
+		(rev "V1.0")
+		(comment 1 "Scale gas pedal voltage differently for 3000W BLDC motorcontroller")
+	)
 	(lib_symbols
 		(symbol "Amplifier_Operational_AKL:LM358N"
 			(pin_names
@@ -3314,6 +3320,18 @@
 		(uuid "4067c1eb-71a4-411b-b968-b1e4890db6dc")
 	)
 	(junction
+		(at 181.61 96.52)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "536327e6-af5d-4033-956a-9b36170c082d")
+	)
+	(junction
+		(at 373.38 217.17)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "6366ef87-1d92-4add-8414-8a737ad39ad9")
+	)
+	(junction
 		(at 341.63 116.84)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3601,6 +3619,16 @@
 	)
 	(wire
 		(pts
+			(xy 210.82 199.39) (xy 217.17 199.39)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "15854325-aae7-432c-82fc-3e989d15afe1")
+	)
+	(wire
+		(pts
 			(xy 290.83 132.08) (xy 290.83 134.62)
 		)
 		(stroke
@@ -3618,6 +3646,16 @@
 			(type default)
 		)
 		(uuid "18bc824b-17fd-4999-855f-94e7301efa8d")
+	)
+	(wire
+		(pts
+			(xy 347.98 214.63) (xy 345.44 214.63)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1b215572-2bf9-4375-a507-e38e5a82646e")
 	)
 	(wire
 		(pts
@@ -3738,6 +3776,16 @@
 			(type default)
 		)
 		(uuid "2a7de6e4-742a-46ce-b093-0014077feca4")
+	)
+	(wire
+		(pts
+			(xy 194.31 196.85) (xy 217.17 196.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2ae9d358-0eb9-4c6b-befc-0c26c5e2da6f")
 	)
 	(wire
 		(pts
@@ -3868,6 +3916,16 @@
 			(type default)
 		)
 		(uuid "36e5471f-e40b-4b63-825b-d502b8dcb3f6")
+	)
+	(wire
+		(pts
+			(xy 181.61 99.06) (xy 181.61 96.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "36f95566-733b-47e0-967c-f69d0e10a2be")
 	)
 	(wire
 		(pts
@@ -4031,6 +4089,16 @@
 	)
 	(wire
 		(pts
+			(xy 373.38 214.63) (xy 373.38 217.17)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "52c815c9-e03a-403a-bb71-0592877e4447")
+	)
+	(wire
+		(pts
 			(xy 43.18 33.02) (xy 43.18 40.64)
 		)
 		(stroke
@@ -4038,16 +4106,6 @@
 			(type default)
 		)
 		(uuid "533ae57b-db5a-4aba-baee-b24586eb15e7")
-	)
-	(wire
-		(pts
-			(xy 194.31 194.31) (xy 210.82 194.31)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "541ae107-1e2d-40a2-809a-a90723b83e41")
 	)
 	(wire
 		(pts
@@ -4088,6 +4146,16 @@
 			(type default)
 		)
 		(uuid "593f20a2-4be1-4def-bd89-3e8fdab49f67")
+	)
+	(wire
+		(pts
+			(xy 368.3 214.63) (xy 373.38 214.63)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "59f292b9-ba17-4f97-b6b4-e20e66330901")
 	)
 	(wire
 		(pts
@@ -4221,16 +4289,6 @@
 	)
 	(wire
 		(pts
-			(xy 194.31 196.85) (xy 210.82 196.85)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "690ac1cf-82bc-4905-b4e8-1117721663c7")
-	)
-	(wire
-		(pts
 			(xy 119.38 96.52) (xy 119.38 92.71)
 		)
 		(stroke
@@ -4358,6 +4416,16 @@
 			(type default)
 		)
 		(uuid "756b4d4f-257b-4be0-b917-dfb4ca49e689")
+	)
+	(wire
+		(pts
+			(xy 177.8 96.52) (xy 181.61 96.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "75ea0183-05e4-4dca-834f-46b9402631d4")
 	)
 	(wire
 		(pts
@@ -4531,6 +4599,16 @@
 	)
 	(wire
 		(pts
+			(xy 194.31 194.31) (xy 217.17 194.31)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8e14fa2d-b6d2-40e4-87ca-fbd53c33e768")
+	)
+	(wire
+		(pts
 			(xy 334.01 116.84) (xy 339.09 116.84)
 		)
 		(stroke
@@ -4608,6 +4686,16 @@
 			(type default)
 		)
 		(uuid "974111de-e241-4dc9-8f0f-1d50a35ddf1a")
+	)
+	(wire
+		(pts
+			(xy 345.44 214.63) (xy 345.44 226.06)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9e2ed0ac-82ce-414a-bf5b-c763a6a513c3")
 	)
 	(wire
 		(pts
@@ -4751,6 +4839,16 @@
 	)
 	(wire
 		(pts
+			(xy 194.31 199.39) (xy 207.01 199.39)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b0169172-b1b8-4ae3-bac9-34b447797048")
+	)
+	(wire
+		(pts
 			(xy 203.2 181.61) (xy 194.31 181.61)
 		)
 		(stroke
@@ -4808,6 +4906,16 @@
 			(type default)
 		)
 		(uuid "b7138f18-9497-43b7-9e7a-c90a3621f065")
+	)
+	(wire
+		(pts
+			(xy 160.02 96.52) (xy 170.18 96.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b7faa59d-c40f-4f48-aeca-fecc324c8c4c")
 	)
 	(wire
 		(pts
@@ -4951,6 +5059,16 @@
 	)
 	(wire
 		(pts
+			(xy 181.61 106.68) (xy 181.61 109.22)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c3ec8e56-84f2-4f72-8187-5421451b21ec")
+	)
+	(wire
+		(pts
 			(xy 189.23 68.58) (xy 191.77 68.58)
 		)
 		(stroke
@@ -4958,16 +5076,6 @@
 			(type default)
 		)
 		(uuid "c6d4745e-c0de-48d2-987e-c43087824d95")
-	)
-	(wire
-		(pts
-			(xy 194.31 191.77) (xy 210.82 191.77)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c6f9e260-0efb-4ae2-a763-aa1f1835dbaf")
 	)
 	(wire
 		(pts
@@ -5151,6 +5259,16 @@
 	)
 	(wire
 		(pts
+			(xy 194.31 191.77) (xy 217.17 191.77)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ea6f6535-c5b4-4167-8052-e378ee4c5497")
+	)
+	(wire
+		(pts
 			(xy 124.46 173.99) (xy 124.46 175.26)
 		)
 		(stroke
@@ -5168,6 +5286,16 @@
 			(type default)
 		)
 		(uuid "ef53f596-b896-4c2f-8cb3-77e2e44f6403")
+	)
+	(wire
+		(pts
+			(xy 181.61 96.52) (xy 195.58 96.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f5f25093-a8f7-45b3-bcf2-73e8d6a77e77")
 	)
 	(wire
 		(pts
@@ -5198,16 +5326,6 @@
 			(type default)
 		)
 		(uuid "f8aea1cb-195d-4d1e-ada7-9286e9f0dfc5")
-	)
-	(wire
-		(pts
-			(xy 194.31 199.39) (xy 210.82 199.39)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "faac2daf-5bda-4b28-a523-58e7c32a9aef")
 	)
 	(wire
 		(pts
@@ -5318,6 +5436,18 @@
 		(uuid 2c243626-21b9-41b7-8927-7774d551be13)
 	)
 	(rectangle
+		(start 158.75 86.36)
+		(end 200.66 115.57)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(uuid 5316768e-685e-4c6e-bba7-09d4c9ec4bbe)
+	)
+	(rectangle
 		(start 22.86 21.59)
 		(end 95.25 50.8)
 		(stroke
@@ -5387,13 +5517,14 @@
 		)
 		(uuid "0a9adf49-ef98-407f-a5b6-0132c275410f")
 	)
-	(text "TODO: is 5V 3speed-sw and 5V throttle the same from controller? connect them on pcb?"
+	(text "TODO: \n- is 5V 3speed-sw and 5V throttle the same from controller? connect them on pcb?\n- measure reverse switch voltage\n"
 		(exclude_from_sim no)
-		(at 181.61 108.204 0)
+		(at 141.732 127 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
+			(justify left)
 		)
 		(uuid "0eb4f4c3-cb7a-4bb9-a00f-8964cb231983")
 	)
@@ -5437,6 +5568,16 @@
 			(justify left)
 		)
 		(uuid "778eed68-1720-4a97-88e7-51e041fde792")
+	)
+	(text "note: 3 usually not connected\n"
+		(exclude_from_sim no)
+		(at 353.822 231.394 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "91bfda80-5ab3-4e31-9d3c-7654d82b1c92")
 	)
 	(text "additional 9V (>5V) supply necessary because \n1. no rail-to-rail opamp is available\n2. motorcontroller does not provide sufficient 5V for this circuit \n   (there seems to be a series resistor when using throttle supply cable - drops to 4V)"
 		(exclude_from_sim no)
@@ -5500,6 +5641,16 @@
 		)
 		(uuid "cf905ab6-277b-458f-b166-55b7a27e374d")
 	)
+	(text "Reverse switch"
+		(exclude_from_sim no)
+		(at 167.132 89.662 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "ee9c2128-377c-4983-af88-85bce4b8a94a")
+	)
 	(label "MOSI"
 		(at 203.2 176.53 180)
 		(fields_autoplaced yes)
@@ -5543,6 +5694,17 @@
 			(justify left bottom)
 		)
 		(uuid "15c86a93-d894-47da-aac4-c008574628ed")
+	)
+	(label "REV-in"
+		(at 210.82 199.39 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "25de3d2b-092c-4138-99df-40e50546a1f0")
 	)
 	(label "MOSI"
 		(at 336.55 212.09 0)
@@ -5654,6 +5816,17 @@
 		)
 		(uuid "53ab0caa-2203-41bf-a4ab-3ae5d953895f")
 	)
+	(label "Reverse-sw"
+		(at 195.58 96.52 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "55304234-bf61-472a-87ec-ff7c47b9f8ce")
+	)
 	(label "Throttle-IN-Filtered"
 		(at 222.25 189.23 180)
 		(fields_autoplaced yes)
@@ -5697,6 +5870,17 @@
 			(justify right bottom)
 		)
 		(uuid "7e53c97d-ec98-4391-820e-3b9c81c30043")
+	)
+	(label "REV-in"
+		(at 160.02 96.52 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "9a04e278-debb-498a-96ee-225516e55437")
 	)
 	(label "MISO"
 		(at 336.55 222.25 0)
@@ -5774,6 +5958,17 @@
 			(justify right bottom)
 		)
 		(uuid "d7fec046-fb69-48ba-b71c-64705a72bc98")
+	)
+	(label "Reverse-sw"
+		(at 207.01 199.39 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "e2176d12-3fb9-4cb0-af48-9a7ec419b9ff")
 	)
 	(label "Throttle-IN-Filtered"
 		(at 345.44 45.72 180)
@@ -5915,6 +6110,73 @@
 			(project "throttle-tune"
 				(path "/54596f3c-134d-419d-8b8d-e3d4fb1ac7e3"
 					(reference "TP10")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 173.99 96.52 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "07f77bcf-9518-48e3-88f3-e194f5028f56")
+		(property "Reference" "R11"
+			(at 173.99 92.456 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "100k"
+			(at 174.244 94.234 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal"
+			(at 173.99 98.298 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 173.99 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 173.99 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "0b23ebb1-b1b5-4842-8ebe-b7a5bd1b1a73")
+		)
+		(pin "1"
+			(uuid "4a8af61a-8186-46a4-ad56-9ab2da2c0832")
+		)
+		(instances
+			(project "throttle-tune"
+				(path "/54596f3c-134d-419d-8b8d-e3d4fb1ac7e3"
+					(reference "R11")
 					(unit 1)
 				)
 			)
@@ -6276,7 +6538,7 @@
 	)
 	(symbol
 		(lib_id "Connector:Screw_Terminal_01x02")
-		(at 215.9 196.85 0)
+		(at 222.25 196.85 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -6285,7 +6547,7 @@
 		(fields_autoplaced yes)
 		(uuid "15ed4dc2-44d6-4067-9ec7-8504d1740f27")
 		(property "Reference" "J8"
-			(at 218.44 196.8499 0)
+			(at 224.79 196.8499 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6293,8 +6555,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "gpio-reserve"
-			(at 218.44 199.3899 0)
+		(property "Value" "reserve, reverse-sw"
+			(at 224.79 199.3899 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6303,7 +6565,7 @@
 			)
 		)
 		(property "Footprint" "TerminalBlock:TerminalBlock_bornier-2_P5.08mm"
-			(at 215.9 196.85 0)
+			(at 222.25 196.85 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6312,7 +6574,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 215.9 196.85 0)
+			(at 222.25 196.85 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6321,7 +6583,7 @@
 			)
 		)
 		(property "Description" "Generic screw terminal, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 215.9 196.85 0)
+			(at 222.25 196.85 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7302,7 +7564,7 @@
 				)
 			)
 		)
-		(property "Value" "470"
+		(property "Value" "1k"
 			(at 88.646 97.79 90)
 			(effects
 				(font
@@ -7634,7 +7896,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "TestPoint"
+		(property "Value" "5V"
 			(at 39.37 47.244 0)
 			(effects
 				(font
@@ -8078,6 +8340,75 @@
 			(project "throttle-tune"
 				(path "/54596f3c-134d-419d-8b8d-e3d4fb1ac7e3"
 					(reference "#PWR05")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 181.61 102.87 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5ae9227a-5e7e-409f-a527-5f6b8674e7fe")
+		(property "Reference" "C13"
+			(at 177.038 100.33 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100nF"
+			(at 174.752 104.902 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_THT:C_Disc_D7.0mm_W2.5mm_P5.00mm"
+			(at 182.5752 106.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 181.61 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 181.61 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "c2af0c6a-b2a9-432c-9165-992db3e0f3fa")
+		)
+		(pin "2"
+			(uuid "2fb4c809-3d15-4e09-acb4-53999666a95a")
+		)
+		(instances
+			(project "throttle-tune"
+				(path "/54596f3c-134d-419d-8b8d-e3d4fb1ac7e3"
+					(reference "C13")
 					(unit 1)
 				)
 			)
@@ -9471,7 +9802,7 @@
 		(fields_autoplaced yes)
 		(uuid "9a0e46db-8261-4d33-a9d6-f216aa61118c")
 		(property "Reference" "J5"
-			(at 302.26 208.2799 0)
+			(at 300.99 208.2799 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9479,8 +9810,8 @@
 				(justify right)
 			)
 		)
-		(property "Value" "Conn_01x03_Pin"
-			(at 302.26 210.8199 0)
+		(property "Value" "UART [TX, RX, GND]"
+			(at 300.99 210.8199 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9733,6 +10064,71 @@
 			(project "throttle-tune"
 				(path "/54596f3c-134d-419d-8b8d-e3d4fb1ac7e3"
 					(reference "#PWR040")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 345.44 226.06 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a13d0f83-6bd0-4447-b706-d06768ef72bf")
+		(property "Reference" "#PWR044"
+			(at 345.44 232.41 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 345.44 229.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 345.44 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 345.44 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 345.44 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "cda796a5-8f3d-4779-b603-0cccbabaf628")
+		)
+		(instances
+			(project "throttle-tune"
+				(path "/54596f3c-134d-419d-8b8d-e3d4fb1ac7e3"
+					(reference "#PWR044")
 					(unit 1)
 				)
 			)
@@ -10349,6 +10745,71 @@
 			(project "throttle-tune"
 				(path "/54596f3c-134d-419d-8b8d-e3d4fb1ac7e3"
 					(reference "#PWR021")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 181.61 109.22 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "b70b9c9a-2397-46ff-b571-aef1380cbc0a")
+		(property "Reference" "#PWR010"
+			(at 181.61 115.57 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 181.864 113.284 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 181.61 109.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 181.61 109.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 181.61 109.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "24b10714-925c-40d2-92a3-10a653bfab1e")
+		)
+		(instances
+			(project "throttle-tune"
+				(path "/54596f3c-134d-419d-8b8d-e3d4fb1ac7e3"
+					(reference "#PWR010")
 					(unit 1)
 				)
 			)
@@ -11034,7 +11495,7 @@
 	)
 	(symbol
 		(lib_id "Connector:Screw_Terminal_01x02")
-		(at 215.9 191.77 0)
+		(at 222.25 191.77 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -11043,7 +11504,7 @@
 		(fields_autoplaced yes)
 		(uuid "d13148c2-a7ba-44e6-9654-e68cf21acbf0")
 		(property "Reference" "J7"
-			(at 218.44 191.7699 0)
+			(at 224.79 191.7699 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11052,7 +11513,7 @@
 			)
 		)
 		(property "Value" "gpio-reserve"
-			(at 218.44 194.3099 0)
+			(at 224.79 194.3099 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11061,7 +11522,7 @@
 			)
 		)
 		(property "Footprint" "TerminalBlock:TerminalBlock_bornier-2_P5.08mm"
-			(at 215.9 191.77 0)
+			(at 222.25 191.77 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11070,7 +11531,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 215.9 191.77 0)
+			(at 222.25 191.77 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11079,7 +11540,7 @@
 			)
 		)
 		(property "Description" "Generic screw terminal, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 215.9 191.77 0)
+			(at 222.25 191.77 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11720,7 +12181,7 @@
 				)
 			)
 		)
-		(property "Value" "LM7805_TO220"
+		(property "Value" "LM7805"
 			(at 62.23 167.64 0)
 			(effects
 				(font

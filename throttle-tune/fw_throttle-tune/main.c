@@ -66,11 +66,11 @@ int main(void)
     // read adc
     // max: 1023 = 5V
     // read gas pedal
-    uint16_t adcInputGasPedal = ReadChannel(5); //PC5
+    uint16_t adcInputGasPedal = ReadChannel(1); //PC5
     if (adcInputGasPedal < GAS_PEDAL_MIN) adcInputGasPedal = GAS_PEDAL_MIN;
     if (adcInputGasPedal > GAS_PEDAL_MAX) adcInputGasPedal = GAS_PEDAL_MAX;
     // read output (generated analog voltage via pwm)
-    uint16_t adcOutput = ReadChannel(4); //PC4  - measure generated output voltage for debugging
+    uint16_t adcOutput = ReadChannel(0); //PC4  - measure generated output voltage for debugging
 
     // calculate percentages for logging
     uint16_t pedalPercent = (uint32_t)(adcInputGasPedal-GAS_PEDAL_MIN) * 100 / (GAS_PEDAL_MAX - GAS_PEDAL_MIN);
@@ -89,6 +89,9 @@ int main(void)
     // calculate duty
     //TODO limit to range 0-1023   in case of negative = large number?!
     duty = (uint32_t)(LEVEL1_MAX_DUTY-CONTROLLER_START) *1000 / (GAS_PEDAL_MAX - GAS_PEDAL_MIN)  * (adcInputGasPedal - GAS_PEDAL_MIN) / 1000 + CONTROLLER_START;
+
+    // 1:1 output (no scaling)
+    //duty = adcInputGasPedal;
 
   //turn off completely when below controller start threshold
     if (duty <= CONTROLLER_START) duty = 0;

@@ -491,7 +491,7 @@
       "pos_files": "",
       "specctra_dsn": "export/throttle-tune.dsn",
       "step": "",
-      "svg": "",
+      "svg": "export/",
       "vrml": ""
     },
     "page_layout_descr_file": ""

@@ -5688,6 +5688,17 @@
 		)
 		(uuid "0a9adf49-ef98-407f-a5b6-0132c275410f")
 	)
+	(text "note: controller cables are GND, SPEED-HIGH, SPEED-LOW (measures 5V open)\n=> switch pulls signal wires to gnd\nissue: due to high current, the voltage on not switched wire also drops and uc detects low as well\n=> dropped idea of tapping into 3-speed controller wire -> separate 3 wires to switch that switch the board 5V to the inputs"
+		(exclude_from_sim no)
+		(at 151.13 82.042 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "33963bc7-da9b-43d5-bb9c-d0999f5b3949")
+	)
 	(text "throttle connectors\n"
 		(exclude_from_sim no)
 		(at 37.338 178.562 0)
@@ -5749,6 +5760,16 @@
 			(justify left)
 		)
 		(uuid "93b55276-57f2-4c6a-8da8-409c291e2893")
+	)
+	(text "dropped this"
+		(exclude_from_sim no)
+		(at 190.754 46.482 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "976f7230-1a45-4766-b209-ead7b3e924e9")
 	)
 	(text "gas pedal input: lowpass"
 		(exclude_from_sim no)
@@ -6361,7 +6382,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "5V/GND"
+		(property "Value" "5V out, GND"
 			(at 68.58 247.6501 0)
 			(effects
 				(font
@@ -9154,7 +9175,7 @@
 				)
 			)
 		)
-		(property "Value" "throttle-out"
+		(property "Value" "throttle-OUT: GND, Analog, 5V-motorctl"
 			(at 74.422 196.596 0)
 			(effects
 				(font
@@ -10181,7 +10202,7 @@
 				)
 			)
 		)
-		(property "Value" "3speedSw-in"
+		(property "Value" "3-speed-IN: COM, sw-fast, sw-slow"
 			(at 156.464 34.798 0)
 			(effects
 				(font
@@ -10253,7 +10274,7 @@
 				)
 			)
 		)
-		(property "Value" "9V supply / small battery"
+		(property "Value" "9V supply batt: GND, 9V"
 			(at 24.384 51.054 90)
 			(effects
 				(font
@@ -10650,7 +10671,7 @@
 				)
 			)
 		)
-		(property "Value" "3speedSw-out"
+		(property "Value" "3-speed-OUT: COM, sw-fast, sw-slow"
 			(at 187.706 34.798 0)
 			(effects
 				(font
@@ -11464,7 +11485,7 @@
 				)
 			)
 		)
-		(property "Value" "gas-pedal-in"
+		(property "Value" "gas-pedal-IN: GND, Analog, 5V-motorctl"
 			(at 29.21 196.596 0)
 			(effects
 				(font

@@ -137,8 +137,8 @@
 				)
 			)
 		)
-		(property "Value" "9V supply / small battery"
-			(at 0.508 7.62 90)
+		(property "Value" "9V supply batt: GND, 9V"
+			(at 5.912 9.596 90)
 			(layer "F.Fab")
 			(uuid "f406e744-c5bd-4432-9ed3-fa82b5580500")
 			(effects
@@ -1139,8 +1139,8 @@
 				)
 			)
 		)
-		(property "Value" "3speedSw-in"
-			(at 4.572 6.604 0)
+		(property "Value" "3-speed-IN: COM, sw-fast, sw-slow"
+			(at 7.564 6.604 0)
 			(layer "F.Fab")
 			(uuid "21455d4c-ea17-40eb-9ecb-51feb09aacea")
 			(effects
@@ -1938,7 +1938,7 @@
 		(descr "Resistor, Axial_DIN0207 series, Axial, Horizontal, pin pitch=10.16mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Horizontal pin pitch 10.16mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R12"
-			(at 5.08 -2.37 360)
+			(at 5.08 -2.37 0)
 			(layer "F.SilkS")
 			(uuid "09c0fbfd-9829-48cf-894b-731961563dc4")
 			(effects
@@ -1949,7 +1949,7 @@
 			)
 		)
 		(property "Value" "47k"
-			(at 5.08 2.37 360)
+			(at 5.08 2.37 0)
 			(layer "F.Fab")
 			(uuid "ba5f339c-6a36-4ceb-83e9-1497cb42f244")
 			(effects
@@ -2164,7 +2164,7 @@
 			(uuid "037d39fc-0c11-47f5-aff2-9b4121f5653f")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 5.08 0 360)
+			(at 5.08 0 0)
 			(layer "F.Fab")
 			(uuid "08ec84d4-ab5f-49c0-a1ed-93699e4a36eb")
 			(effects
@@ -2713,7 +2713,7 @@
 		(descr "TO-92 leads in-line, wide, drill 0.75mm (see NXP sot054_po.pdf), Alternate KiCad Library")
 		(tags "to-92 sc-43 sc-43a sot54 PA33 transistor")
 		(property "Reference" "Q2"
-			(at 2.54 -3.56 360)
+			(at 2.54 -3.56 0)
 			(layer "F.SilkS")
 			(uuid "9504e34d-3e6f-48b2-9470-08c5fc1f51bb")
 			(effects
@@ -2724,7 +2724,7 @@
 			)
 		)
 		(property "Value" "BC547"
-			(at 2.54 2.79 360)
+			(at 2.54 2.79 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "6fb84e1f-4119-40a5-9b98-7326fd93bddf")
@@ -2736,7 +2736,7 @@
 			)
 		)
 		(property "Footprint" "Package_TO_SOT_THT_AKL:TO-92_Inline_Wide_CBE"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "4a210325-79a0-40bc-9eea-15f11532c5fd")
@@ -2748,7 +2748,7 @@
 			)
 		)
 		(property "Datasheet" "https://www.tme.eu/Document/6c5d898a533a0762c2bc33eb26c283a8/BC546-550-DTE.pdf"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "4fb207a6-5236-411d-9825-65707440437e")
@@ -2760,7 +2760,7 @@
 			)
 		)
 		(property "Description" "NPN TO-92 transistor, 45V, 100mA, 500mW, Complementary to BC557, Alternate KiCAD Library"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "201995b5-ca01-4615-9b01-db94cea08576")
@@ -2937,7 +2937,7 @@
 			)
 		)
 		(fp_text user "${REFERENCE}"
-			(at 2.54 0 360)
+			(at 2.54 0 0)
 			(layer "F.Fab")
 			(uuid "1285551c-70cf-49d8-add6-c7f145a4f650")
 			(effects
@@ -3009,8 +3009,8 @@
 				)
 			)
 		)
-		(property "Value" "gas-pedal-in"
-			(at 5.08 5.08 0)
+		(property "Value" "gas-pedal-IN: GND, Analog, 5V-motorctl"
+			(at 0.9 7.008 0)
 			(layer "F.Fab")
 			(uuid "4d234fdb-c0df-4672-b5d7-1579108b35af")
 			(effects
@@ -4062,8 +4062,8 @@
 				)
 			)
 		)
-		(property "Value" "3speedSw-out"
-			(at 4.572 6.604 0)
+		(property "Value" "3-speed-OUT: COM, sw-fast, sw-slow"
+			(at 11.196 9.088 0)
 			(layer "F.Fab")
 			(uuid "c8f024ed-0813-468a-afa5-9844e9506451")
 			(effects
@@ -4936,8 +4936,8 @@
 				)
 			)
 		)
-		(property "Value" "5V/GND"
-			(at 3.048 7.62 90)
+		(property "Value" "5V out, GND"
+			(at 2.672 7.596 90)
 			(layer "F.Fab")
 			(uuid "e0f6817d-16d9-48af-a5ef-5929e0100bff")
 			(effects
@@ -8718,7 +8718,7 @@
 		(descr "C, Disc series, Radial, pin pitch=5.00mm, , diameter*width=7*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 5.00mm  diameter 7mm width 2.5mm Capacitor")
 		(property "Reference" "C9"
-			(at 2.5 0 360)
+			(at 2.5 0 0)
 			(layer "F.SilkS")
 			(uuid "08e539c9-2347-4260-93bf-bd6adb48c63a")
 			(effects
@@ -8729,7 +8729,7 @@
 			)
 		)
 		(property "Value" "100nF"
-			(at 4.024 -2.032 360)
+			(at 4.024 -2.032 0)
 			(layer "F.Fab")
 			(uuid "ff5ef10f-c6e4-44aa-9069-a27a5e23c4f9")
 			(effects
@@ -8904,7 +8904,7 @@
 			(uuid "9457d189-d009-4bda-8624-bff4c1e736c3")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 2.5 0 360)
+			(at 2.5 0 0)
 			(layer "F.Fab")
 			(uuid "72e1d641-6214-46c1-a310-9fb6dd0b99ba")
 			(effects
@@ -11540,8 +11540,8 @@
 				)
 			)
 		)
-		(property "Value" "throttle-out"
-			(at 5.08 5.08 0)
+		(property "Value" "throttle-OUT: GND, Analog, 5V-motorctl"
+			(at -0.136 5.08 0)
 			(layer "F.Fab")
 			(uuid "33850c99-5a94-43bf-b0cf-8bf448ac604d")
 			(effects
@@ -12794,7 +12794,7 @@
 			)
 		)
 		(property "Value" "gpio-reserve"
-			(at 2.032 5.08 0)
+			(at 2.032 4.508 0)
 			(layer "F.Fab")
 			(uuid "59d646e8-cfbe-486f-bd53-40eb446d0eae")
 			(effects
@@ -14419,7 +14419,7 @@
 			)
 		)
 		(property "Value" "reserve, reverse-sw"
-			(at 6.096 5.08 0)
+			(at 4.96 7.008 0)
 			(layer "F.Fab")
 			(uuid "bb1a1b61-7eb5-478e-9719-3d4e537a097b")
 			(effects
@@ -15169,6 +15169,18 @@
 		(fill none)
 		(layer "Edge.Cuts")
 		(uuid "7aaf460c-958b-49c2-a529-49612f480569")
+	)
+	(gr_text "dropped\n(motorcontroller not connected here)"
+		(at 54 -3.5 0)
+		(layer "Dwgs.User")
+		(uuid "3af779b6-3748-41c4-a33c-7b375a4dd1c1")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify left bottom)
+		)
 	)
 	(segment
 		(start 16.238 29.446)

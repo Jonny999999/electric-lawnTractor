@@ -17,3 +17,6 @@ When using cheap 3000W bldc motorcontrollers (e.g. KT) i had the following probl
 
 # Layout
 <img src="pcb_throttle-tune/export/layout.svg" style="width: 55%;">
+
+# Photo
+<img src="pcb.jpg" style="width: 49%;">

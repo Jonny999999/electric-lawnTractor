@@ -492,7 +492,7 @@
       "specctra_dsn": "export/throttle-tune.dsn",
       "step": "",
       "svg": "export/",
-      "vrml": ""
+      "vrml": "throttle-tune.wrl"
     },
     "page_layout_descr_file": ""
   },

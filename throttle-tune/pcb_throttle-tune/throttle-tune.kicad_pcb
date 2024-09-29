@@ -365,9 +365,9 @@
 			(pintype "passive")
 			(uuid "79ea4fef-913b-4c51-b0b5-da16b2d7dc9e")
 		)
-		(model "${KICAD8_3DMODEL_DIR}/TerminalBlock.3dshapes/TerminalBlock_bornier-2_P5.08mm.wrl"
+		(model "${KICAD8_3DMODEL_DIR}/TerminalBlock_Phoenix.3dshapes/TerminalBlock_Phoenix_PT-1,5-2-5.0-H_1x02_P5.00mm_Horizontal.step"
 			(offset
-				(xyz 2.539999962 0 0)
+				(xyz 0 0 0)
 			)
 			(scale
 				(xyz 1 1 1)
@@ -1378,9 +1378,9 @@
 			(pintype "passive")
 			(uuid "0b048d2b-85ea-4feb-b5b0-87e7ee3756dd")
 		)
-		(model "${KICAD8_3DMODEL_DIR}/TerminalBlock.3dshapes/TerminalBlock_bornier-3_P5.08mm.wrl"
+		(model "${KICAD8_3DMODEL_DIR}/TerminalBlock_Phoenix.3dshapes/TerminalBlock_Phoenix_PT-1,5-3-5.0-H_1x03_P5.00mm_Horizontal.step"
 			(offset
-				(xyz 5.079999924 0 0)
+				(xyz 0 0 0)
 			)
 			(scale
 				(xyz 1 1 1)
@@ -2479,7 +2479,7 @@
 		(descr "Potentiometer, vertical, Piher PT-10-V10, http://www.piher-nacesa.com/pdf/12-PT10v03.pdf")
 		(tags "Potentiometer vertical Piher PT-10-V10")
 		(property "Reference" "RV1"
-			(at 0.809 -2.65 180)
+			(at 0.809 -2.65 0)
 			(layer "F.SilkS")
 			(uuid "f57334c9-28da-40b3-b042-d688a1f8978e")
 			(effects
@@ -2490,7 +2490,7 @@
 			)
 		)
 		(property "Value" "500k"
-			(at 2.841 -2.142 180)
+			(at 2.841 -2.142 0)
 			(layer "F.Fab")
 			(uuid "8f33ad5e-22fb-4058-97cd-55d9fdd8236d")
 			(effects
@@ -2694,9 +2694,9 @@
 			(pintype "passive")
 			(uuid "3bc02b28-929c-485e-949f-687aff723bd3")
 		)
-		(model "${KICAD8_3DMODEL_DIR}/Potentiometer_THT.3dshapes/Potentiometer_Piher_PT-10-V10_Vertical.wrl"
+		(model "${KICAD8_3DMODEL_DIR}/Potentiometer_THT.3dshapes/Potentiometer_Bourns_3339P_Vertical.step"
 			(offset
-				(xyz 0 0 0)
+				(xyz 5 0.4 0)
 			)
 			(scale
 				(xyz 1 1 1)
@@ -3248,9 +3248,9 @@
 			(pintype "passive")
 			(uuid "14b9b3e1-988c-47ab-89a8-a06c2b36804c")
 		)
-		(model "${KICAD8_3DMODEL_DIR}/TerminalBlock.3dshapes/TerminalBlock_bornier-3_P5.08mm.wrl"
+		(model "${KICAD8_3DMODEL_DIR}/TerminalBlock_Phoenix.3dshapes/TerminalBlock_Phoenix_PT-1,5-3-5.0-H_1x03_P5.00mm_Horizontal.step"
 			(offset
-				(xyz 5.079999924 0 0)
+				(xyz 0 0 0)
 			)
 			(scale
 				(xyz 1 1 1)
@@ -4301,9 +4301,9 @@
 			(pintype "passive")
 			(uuid "ed8c1e8b-4881-418f-ab53-f9f458b7da4a")
 		)
-		(model "${KICAD8_3DMODEL_DIR}/TerminalBlock.3dshapes/TerminalBlock_bornier-3_P5.08mm.wrl"
+		(model "${KICAD8_3DMODEL_DIR}/TerminalBlock_Phoenix.3dshapes/TerminalBlock_Phoenix_PT-1,5-3-5.0-H_1x03_P5.00mm_Horizontal.step"
 			(offset
-				(xyz 5.079999924 0 0)
+				(xyz 0 0 0)
 			)
 			(scale
 				(xyz 1 1 1)
@@ -5164,9 +5164,9 @@
 			(pintype "passive")
 			(uuid "afd7b485-c66a-4e82-9b7c-07ed6b782ed3")
 		)
-		(model "${KICAD8_3DMODEL_DIR}/TerminalBlock.3dshapes/TerminalBlock_bornier-2_P5.08mm.wrl"
+		(model "${KICAD8_3DMODEL_DIR}/TerminalBlock_Phoenix.3dshapes/TerminalBlock_Phoenix_PT-1,5-2-5.0-H_1x02_P5.00mm_Horizontal.step"
 			(offset
-				(xyz 2.539999962 0 0)
+				(xyz 0 0 0)
 			)
 			(scale
 				(xyz 1 1 1)
@@ -9816,7 +9816,7 @@
 			)
 		)
 		(property "Value" "ATMEGA8A-P"
-			(at 4.826 26.67 180)
+			(at 4.826 26.67 360)
 			(layer "F.Fab")
 			(uuid "1c25fb6b-0123-45a9-af41-d5580fbebe82")
 			(effects
@@ -10420,7 +10420,7 @@
 			(pintype "bidirectional")
 			(uuid "ce7a730a-76d5-4997-b152-039919809560")
 		)
-		(model "${KICAD8_3DMODEL_DIR}/Package_DIP.3dshapes/CERDIP-28_W7.62mm_SideBrazed_LongPads_Socket.wrl"
+		(model "${KICAD8_3DMODEL_DIR}/Package_DIP.3dshapes/DIP-28_W7.62mm.step"
 			(offset
 				(xyz 0 0 0)
 			)
@@ -11779,9 +11779,9 @@
 			(pintype "passive")
 			(uuid "bc3acb0f-a089-452b-b24a-e3a70b60bee2")
 		)
-		(model "${KICAD8_3DMODEL_DIR}/TerminalBlock.3dshapes/TerminalBlock_bornier-3_P5.08mm.wrl"
+		(model "${KICAD8_3DMODEL_DIR}/TerminalBlock_Phoenix.3dshapes/TerminalBlock_Phoenix_PT-1,5-3-5.0-H_1x03_P5.00mm_Horizontal.step"
 			(offset
-				(xyz 5.079999924 0 0)
+				(xyz 0 0 0)
 			)
 			(scale
 				(xyz 1 1 1)
@@ -13021,9 +13021,9 @@
 			(pintype "passive")
 			(uuid "8cdcdf48-f69a-4693-9eb7-e96ee5afa701")
 		)
-		(model "${KICAD8_3DMODEL_DIR}/TerminalBlock.3dshapes/TerminalBlock_bornier-2_P5.08mm.wrl"
+		(model "${KICAD8_3DMODEL_DIR}/TerminalBlock_Phoenix.3dshapes/TerminalBlock_Phoenix_PT-1,5-2-5.0-H_1x02_P5.00mm_Horizontal.step"
 			(offset
-				(xyz 2.539999962 0 0)
+				(xyz 0 0 0)
 			)
 			(scale
 				(xyz 1 1 1)
@@ -14646,9 +14646,9 @@
 			(pintype "passive")
 			(uuid "b99da57e-2e5b-424b-ae1c-7503516c51a8")
 		)
-		(model "${KICAD8_3DMODEL_DIR}/TerminalBlock.3dshapes/TerminalBlock_bornier-2_P5.08mm.wrl"
+		(model "${KICAD8_3DMODEL_DIR}/TerminalBlock_Phoenix.3dshapes/TerminalBlock_Phoenix_PT-1,5-2-5.0-H_1x02_P5.00mm_Horizontal.step"
 			(offset
-				(xyz 2.539999962 0 0)
+				(xyz 0 0 0)
 			)
 			(scale
 				(xyz 1 1 1)

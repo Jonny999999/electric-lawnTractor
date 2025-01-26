@@ -490,7 +490,7 @@
       "plot": "export/",
       "pos_files": "",
       "specctra_dsn": "export/throttle-tune.dsn",
-      "step": "",
+      "step": "throttle-tune.step",
       "svg": "export/",
       "vrml": "throttle-tune.wrl"
     },

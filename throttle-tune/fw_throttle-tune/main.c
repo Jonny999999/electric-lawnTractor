@@ -3,6 +3,8 @@
 #include "usart.h"
 #include "a2d.h"
 
+#include "gpio.h"
+
 //====================
 //====== config ======
 //====================
@@ -22,6 +24,13 @@
 //--- fading ---
 #define DUTY_RAMP_UP_INCREMENT 6 //duty increment per iteration (note depends on cycle duration be aware when e.g. disabling uart)
 #define DUTY_MEMORY_DECREMENT 2 //track/estimate motor rpm/rolling out for quicker resume, smaller value means rolls out longer (resumes higher)
+
+
+//--- configure GPIO Pins ---
+// buzzer
+const GPIO_Pin buzzerPin = {PC4, &PORTC, &DDRC, &PINC};
+
+
 
 
 
@@ -71,10 +80,24 @@ int main(void)
   //PD3, pin5 speedSwitch2_fast
   DDRD &= ~(1<<PD2);
 
+  GPIO_Init(&buzzerPin, 1); // init buzzer as output
+
+
   // variables
   uint16_t dutyTarget = 0;
   uint16_t duty = 0;
   uint16_t dutyMemory = 0;
+
+  
+  // beep at startup:
+  for (int i = 0; i < 3; i++)
+  {
+    GPIO_Set(&buzzerPin);
+    _delay_ms(100);
+    GPIO_Clear(&buzzerPin);
+    _delay_ms(100);
+  }
+
 
   while (1)
   {

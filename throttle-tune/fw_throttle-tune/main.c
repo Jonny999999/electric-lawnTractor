@@ -30,6 +30,9 @@
 // buzzer
 const GPIO_Pin buzzerPin = {PC4, &PORTC, &DDRC, &PINC};
 
+// speed switch
+const GPIO_Pin speedSwitch1_slow = {PD3, &PORTD, &DDRD, &PIND};
+const GPIO_Pin speedSwitch2_fast = {PD2, &PORTD, &DDRD, &PIND};
 
 
 
@@ -73,14 +76,13 @@ int main(void)
   uart_init();
   uart_sendStr("hello world\n");
 
-  // init gpio
-  // speed switch input
-  //PD2, pin4  speedSwitch1_slow
-  DDRD &= ~(1<<PD3);
-  //PD3, pin5 speedSwitch2_fast
-  DDRD &= ~(1<<PD2);
 
+  // --- init GPIO pins ---
+  // init output
   GPIO_Init(&buzzerPin, 1); // init buzzer as output
+  // init inputs
+  GPIO_Init(&speedSwitch1_slow, 0);
+  GPIO_Init(&speedSwitch2_fast, 0);
 
 
   // variables
@@ -104,9 +106,9 @@ int main(void)
     //===== speed-switch =====
     // define max motor percentage by speed toggle switch
     uint8_t maxPercentage;
-    if ((PIND & (1 << PD3)))                // switch at level 1 (slow)
+    if (GPIO_Read(&speedSwitch1_slow))                // switch at level 1 (slow)
       maxPercentage = LEVEL1_MAX_PERCENT;
-    else if ((PIND & (1 << PD2)))           // switch at level 3 (fast)
+    else if (GPIO_Read(&speedSwitch2_fast))           // switch at level 3 (fast)
       maxPercentage = LEVEL3_MAX_PERCENT;
     else                                  // both low: switch at level 2 (medium)
       maxPercentage = LEVEL2_MAX_PERCENT;

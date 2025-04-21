@@ -12,6 +12,12 @@ When using cheap 3000W bldc motorcontrollers (e.g. KT) i had the following probl
 - scale differently in reverse
 - ramp up / down
 
+# TODO pcb:
+ - add TVS diode 
+ - add buzzer
+ - drop unused terminal?
+ - add reverse polarity protection
+ 
 # Schematic
 [throttle-tune/pcb_throttle-tune/export/schematic.pdf](pcb_throttle-tune/export/schematic.pdf)
 

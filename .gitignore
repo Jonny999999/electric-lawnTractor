@@ -48,3 +48,6 @@ calc-speed.ods
 
 #drawio
 *.bkp
+
+#vscode
+.vscode

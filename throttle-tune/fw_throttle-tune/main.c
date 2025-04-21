@@ -10,29 +10,37 @@
 //====================
 //#define DEBUG_PASS_THROUGH //if defined duty/output voltage is set to the same as input voltage (test hardware)
 //--- thresholds (adc values) ---
-#define GAS_PEDAL_MAX 750
-#define GAS_PEDAL_MIN 180 // actual 172
+#define GAS_PEDAL_MAX 670 // actual 660 no force / 697 with force
+#define GAS_PEDAL_MIN 175 // actual 171 - note weird behaviour: when pressing decreases to 160 first then increases to MAX 
 
-#define CONTROLLER_START 250
-#define CONTROLLER_MAX 1023
+#define CONTROLLER_START 250  // 250 starts, 246 stops (TODO: start higher?)
+#define CONTROLLER_MAX 600
 
 //--- levels ---
-#define LEVEL1_MAX_PERCENT 7
-#define LEVEL2_MAX_PERCENT 18
-#define LEVEL3_MAX_PERCENT 95
+#define LEVEL1_MAX_PERCENT 10
+#define LEVEL2_MAX_PERCENT 30
+#define LEVEL3_MAX_PERCENT 100
+
+// TODO handle REVERSE speeds separately
 
 //--- fading ---
 #define DUTY_RAMP_UP_INCREMENT 6 //duty increment per iteration (note depends on cycle duration be aware when e.g. disabling uart)
 #define DUTY_MEMORY_DECREMENT 2 //track/estimate motor rpm/rolling out for quicker resume, smaller value means rolls out longer (resumes higher)
 
+#define DISABLE_RAMP
+#ifdef DISABLE_RAMP
+// redefine increments with larger values to essentially disable / speed up ramps temporarily
+#define DUTY_MEMORY_DECREMENT 100
+#define DUTY_RAMP_UP_INCREMENT 100
+#endif
 
 //--- configure GPIO Pins ---
 // buzzer
 const GPIO_Pin buzzerPin = {PC3, &PORTC, &DDRC, &PINC};
 
 // speed switch
-const GPIO_Pin speedSwitch1_slow = {PD3, &PORTD, &DDRD, &PIND};
-const GPIO_Pin speedSwitch2_fast = {PD2, &PORTD, &DDRD, &PIND};
+const GPIO_Pin speedSwitch1_slow = {PD2, &PORTD, &DDRD, &PIND};
+const GPIO_Pin speedSwitch2_fast = {PD3, &PORTD, &DDRD, &PIND};
 
 
 

@@ -4,6 +4,7 @@
 #include "a2d.h"
 
 #include "gpio.h"
+#include "time.h"
 
 //====================
 //====== config ======
@@ -24,15 +25,13 @@
 // TODO handle REVERSE speeds separately
 
 //--- fading ---
-#define DUTY_RAMP_UP_INCREMENT 6 //duty increment per iteration (note depends on cycle duration be aware when e.g. disabling uart)
-#define DUTY_MEMORY_DECREMENT 2 //track/estimate motor rpm/rolling out for quicker resume, smaller value means rolls out longer (resumes higher)
+// ramp up
+#define DUTY_RAMP_UP_INTERVAL_MS 10 // Time between duty increments
+#define DUTY_RAMP_UP_STEP 6         // Amount of duty to add per interval
+// track/estimate motor rpm/rolling out for quicker resume
+#define DUTY_MEMORY_DECAY_INTERVAL_MS 50
+#define DUTY_MEMORY_DECAY_STEP 2
 
-#define DISABLE_RAMP
-#ifdef DISABLE_RAMP
-// redefine increments with larger values to essentially disable / speed up ramps temporarily
-#define DUTY_MEMORY_DECREMENT 100
-#define DUTY_RAMP_UP_INCREMENT 100
-#endif
 
 //--- configure GPIO Pins ---
 // buzzer
@@ -103,6 +102,10 @@ uint8_t getMaxPercentageFromSpeedSwitches(){
 
 int main(void)
 {
+  // init custom time functions
+  // (tracking timestamp in ms since startup in a variable using timer+ISR)
+  time_init();
+
   // init PWM
   Timer1_FastPWM_Init(); // init timer1 in fast PWM mode with 10bit resolution on pin PB1
 
@@ -127,6 +130,10 @@ int main(void)
   uint8_t maxPercentage = getMaxPercentageFromSpeedSwitches();
   uint8_t maxPercentagePrevious = maxPercentage;
 
+  // fading
+  static uint32_t timestamp_lastRampUpdate = 0;
+  static uint32_t timestamp_lastDutyMemoryUpdate = 0;
+
   
   // beep at startup:
   beep(3);
@@ -135,7 +142,9 @@ int main(void)
 
   while (1)
   {
+    //========================
     //===== speed-switch =====
+    //========================
     // define max motor percentage by speed toggle switch
     maxPercentage = getMaxPercentageFromSpeedSwitches();
 
@@ -160,7 +169,9 @@ int main(void)
     //TODO: handle reverse switch input
 
 
-    //===== read adc gas pedal =====
+    //======================================
+    //===== read + interpret gas-pedal =====
+    //======================================
     uint16_t adcInputGasPedal = ReadChannel(1); // PC5
 
     // calculate gas pedal percentage
@@ -173,7 +184,9 @@ int main(void)
       pedalPercent_x10 = (uint32_t)(adcInputGasPedal - GAS_PEDAL_MIN) * 1000 / (GAS_PEDAL_MAX - GAS_PEDAL_MIN);
 
 
-    //====== read output ======
+    //======================================
+    //====== read back output (debug) ======
+    //======================================
     //(generated analog voltage via pwm)
     uint16_t adcOutput = ReadChannel(0); // PC4  - measure generated output voltage for debugging
     // calculate motor percentage from output voltage (for logging)
@@ -187,7 +200,9 @@ int main(void)
     // note: tis is the actual resulted percentage, when using `duty` instead of `adcOutput` you get the target motor percentage
 
 
-    //===== define duty =====
+    //==============================
+    //===== define target duty =====
+    //==============================
     // calculate max allowed duty according to current level
     uint16_t dutyRange = (uint32_t)(CONTROLLER_MAX - CONTROLLER_START) * maxPercentage / 100;
 
@@ -205,35 +220,52 @@ int main(void)
       // duty = (uint32_t)(maxDuty-CONTROLLER_START) *1000 / (GAS_PEDAL_MAX - GAS_PEDAL_MIN)  * (adcInputGasPedal - GAS_PEDAL_MIN) / 1000 + CONTROLLER_START; //without rounding error
 #endif
 
-    //===== manipulate duty =====
+
+    //==================================
+    //===== manipulate actual duty =====
+    //==================================
+    // Fade up
     if (dutyTarget <= duty) // ramp down instantly
       duty = dutyTarget;
     else if (dutyTarget < dutyMemory) // motor probably already turning faster than target -> set immediately
-      duty = dutyTarget;
-    else if (duty < dutyMemory) // estimated current motor speed less than target but still more than current - skip ramp to estimated current rpm duty
       duty = dutyMemory;
-    else if (dutyTarget - duty < DUTY_RAMP_UP_INCREMENT) // set to exact target when differs less than increment
+    else if (duty < dutyMemory) // estimated current motor speed less than target but still more than current - skip ramping to estimated current rpm duty again
+      duty = dutyMemory;
+    else if (dutyTarget - duty < DUTY_RAMP_UP_STEP) // set to exact target when differs less than increment
       duty = dutyTarget;
     else if (duty < CONTROLLER_START) //immediately start at controller start value
         duty = CONTROLLER_START;
-    else // ramp up slowly 
-      duty+=DUTY_RAMP_UP_INCREMENT; //ramp up TODO: timestamps
+    else { // ramp up slowly 
+      if (time_msPassedSince(timestamp_lastRampUpdate) >= DUTY_RAMP_UP_INTERVAL_MS) {
+          duty += DUTY_RAMP_UP_STEP;
+          timestamp_lastRampUpdate = time_get_ms();
+      }
+  }
 
     // variable to estimate/track motor rpm (motor does not immediately stop when duty is reduced)
     // used for faster resume when pressing pedal again while rolling out
-    if (duty > dutyMemory)
-      dutyMemory = duty;
-    else if (dutyMemory < DUTY_MEMORY_DECREMENT)
-      dutyMemory = 0;
-    else 
-      dutyMemory -= DUTY_MEMORY_DECREMENT;
+  if (duty > dutyMemory) { // update immediately if current duty is larger
+    dutyMemory = duty;
+    // decrease slowly when below (running out)
+  } else if (time_msPassedSince(timestamp_lastDutyMemoryUpdate) >= DUTY_MEMORY_DECAY_INTERVAL_MS) {
+    // TODO: decrease more/less depending on current duty?
+      if (dutyMemory < DUTY_MEMORY_DECAY_STEP)
+          dutyMemory = 0;
+      else
+          dutyMemory -= DUTY_MEMORY_DECAY_STEP;
+      timestamp_lastDutyMemoryUpdate = time_get_ms();
+  }
 
 
+    //==========================
     //===== apply new duty =====
+    //==========================
     Set_PWM_Duty_Cycle(duty);
 
 
+    //=======================
     //======= logging =======
+    //=======================
     printf("adcIn=%04d, adcOut=%04d, duty=%04d -- dutyTarget=%04d, dutyMemory=%04d, pedalPercent=%2d, motorPercent=%2d.%d (level/max=%d%%)\n",
            adcInputGasPedal, adcOutput, duty, dutyTarget, dutyMemory,
            pedalPercent_x10 / 10, motorPercent_x10 / 10, motorPercent_x10 % 10, maxPercentage);

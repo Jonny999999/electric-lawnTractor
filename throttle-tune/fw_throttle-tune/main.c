@@ -28,9 +28,11 @@
 // TODO handle REVERSE speeds separately
 
 //--- fading ---
-// track/estimate motor rpm/rolling out for quicker resume
+// track/estimate motor rpm/rolling out for quicker resume (start fading up from memory instead of 0)
+// 
+// 5, 50ms -> 5s to decay from 100% to 0% 
 #define DUTY_MEMORY_DECAY_INTERVAL_MS 50
-#define DUTY_MEMORY_DECAY_STEP 10 // max 1023
+#define DUTY_MEMORY_DECAY_STEP 5 // max 1023
 
 
 //--- configure GPIO Pins ---
@@ -52,7 +54,8 @@ typedef struct {
     uint8_t maxPercent;     // percent of max possible speed applied at full throttle
     uint8_t beepCount;      // count beeped when entering this mode
     uint16_t rampUpStep;    // max duty increment per interval (max 1023)
-    uint16_t rampUpInterval; // note: must be larger than cycle time (consider when UART used alot)
+    uint16_t rampUpIntervalMs; // note: must be larger than cycle time (consider when UART used alot)
+    uint8_t pedalAverageWindowSize; // window size of the moving average to smooth pedal input (0 = disabled)
     // Future: pedal averaging, throttle curve, etc.
 } kettcarConfig_t;
 
@@ -68,33 +71,42 @@ uint8_t currentModeIndex = 0;
 // note that speed switch also affects / limits the controller (sw connected to controller as well to limit top speed)
 // so maxPercent is not directly comparable between modes (e.g. even all at 100%: already slower in slow mode)
 const kettcarConfig_t modeConfigs[NUM_MODES] = {
+  #define TIME_FROM_0_TO_100(rampUpStep, rampUpIntervalMs) ((CONTROLLER_MAX - CONTROLLER_START) * rampUpIntervalMs / rampUpStep)
     {
         .name = "Slow",
         .maxPercent = 15,
         .beepCount = 1,
-        .rampUpStep = 2,
-        .rampUpInterval = 10
+        // 1, 15ms -> 7.5s from 0 to 100% 
+        .rampUpStep = 1,
+        .rampUpIntervalMs = 15,
+        .pedalAverageWindowSize = 0
     },
     {
         .name = "Medium",
         .maxPercent = 35,
         .beepCount = 2,
-        .rampUpStep = 5,
-        .rampUpInterval = 10
+        // 1, 10ms -> 5s from 0 to 100%
+        .rampUpStep = 2,
+        .rampUpIntervalMs = 10,
+        .pedalAverageWindowSize = 0
     },
     {
         .name = "Fast",
         .maxPercent = 95,
+        // 3, 10ms -> 1.7s from 0 to 100%
         .beepCount = 3,
         .rampUpStep = 10,
-        .rampUpInterval = 10
+        .rampUpIntervalMs = 10,
+        .pedalAverageWindowSize = 0
     },
     {
         .name = "Sport",
         .maxPercent = 100,
         .beepCount = 5,
-        .rampUpStep = 1000,
-        .rampUpInterval = 1
+        // ramp disabled - always set to target immediately
+        .rampUpStep = 1024,
+        .rampUpIntervalMs = 0,
+        .pedalAverageWindowSize = 100
     }
 };
 
@@ -201,6 +213,37 @@ void handleSlowMediumFastModeSwitch(void) {
 
 
 
+// Function to calculate the moving average of the last N pedal values
+#define PEDAL_SMOOTHING_MAX_WINDOW_SIZE 512
+uint16_t GetSmoothedPedalInput(uint16_t newPedalValue, uint8_t windowSize) {
+  // Array to store past pedal values
+  static uint16_t pedalHistory[PEDAL_SMOOTHING_MAX_WINDOW_SIZE] = {0};
+  static uint8_t pedalHistoryIndex = 0;
+
+  // return same value when window is 0 or 1 aka disabled
+  if (windowSize < 2)
+    return newPedalValue;
+
+  // Add new value to the history array
+  pedalHistory[pedalHistoryIndex] = newPedalValue;
+  
+  // Move to the next index, wrapping around the array
+  pedalHistoryIndex = (pedalHistoryIndex + 1) % windowSize;
+  
+  // Calculate the sum of the last windowSize values
+  uint32_t sum = 0;
+  for (uint8_t i = 0; i < windowSize; i++) {
+      sum += pedalHistory[i];
+  }
+
+  // Return the average 
+  return sum / windowSize;
+}
+
+
+
+
+
 int main(void)
 {
   // init custom time functions
@@ -264,6 +307,8 @@ int main(void)
     else
       pedalPercent_x10 = (uint32_t)(adcInputGasPedal - GAS_PEDAL_MIN) * 1000 / (GAS_PEDAL_MAX - GAS_PEDAL_MIN);
 
+    // smooth out pedal input (remove peaks)
+    pedalPercent_x10 = GetSmoothedPedalInput(pedalPercent_x10, currentConfig->pedalAverageWindowSize);
 
     //======================================
     //====== read back output (debug) ======
@@ -319,7 +364,7 @@ int main(void)
     else if (duty < CONTROLLER_START) //immediately start at controller start value
         duty = CONTROLLER_START;
     else { // ramp up slowly 
-      if (time_msPassedSince(timestamp_lastRampUpdate) >= currentConfig->rampUpInterval) {
+      if (time_msPassedSince(timestamp_lastRampUpdate) >= currentConfig->rampUpIntervalMs) {
           duty += currentConfig->rampUpStep;
           timestamp_lastRampUpdate = time_get_ms();
       }

@@ -5,6 +5,7 @@
 
 #include "gpio.h"
 #include "time.h"
+#include "pwm.h"
 
 //====================
 //====== config ======
@@ -44,35 +45,6 @@ const GPIO_Pin speedSwitch2_fast = {PD3, &PORTD, &DDRD, &PIND};
 
 
 
-void Timer1_FastPWM_Init(void)
-{
-  // Mode 7 Datasheet page 98 Table 39
-  //  Set Fast PWM mode with 10-bit resolution
-  TCCR1A = (1 << WGM10) | (1 << WGM11); // Set WGM10 and WGM11 for 10-bit Fast PWM
-  TCCR1B = (1 << WGM12) | (1 << CS10);  // Set WGM12, no prescaler
-
-  // Set non-inverting mode
-  TCCR1A |= (1 << COM1A1); // Clear OC1A on Compare Match, set OC1A at BOTTOM
-  // If using OCR1B, uncomment the next line
-  // TCCR1A |= (1 << COM1B1);  // Clear OC1B on Compare Match, set OC1B at BOTTOM
-
-  // Set PB1/OC1A as output (for OC1A PWM)
-  DDRB |= (1 << PB1);
-  // If using OC1B, set PB2 as output
-  // DDRB |= (1 << PB2);
-}
-
-
-
-void Set_PWM_Duty_Cycle(uint16_t duty_cycle)
-{
-  OCR1A = duty_cycle; // Set duty cycle for OC1A
-                      // If using OCR1B, set duty cycle for OC1B
-                      // OCR1B = duty_cycle;
-}
-
-
-
 // helper function to beep for certain count
 void beep(uint8_t count){
   static const uint32_t msOn = 100;
@@ -107,7 +79,7 @@ int main(void)
   time_init();
 
   // init PWM
-  Timer1_FastPWM_Init(); // init timer1 in fast PWM mode with 10bit resolution on pin PB1
+  pwm_initFastPwmTimer1(1023, 1); //10 bit res, no prescaler
 
   // init UART
   uart_init();
@@ -260,7 +232,7 @@ int main(void)
     //==========================
     //===== apply new duty =====
     //==========================
-    Set_PWM_Duty_Cycle(duty);
+    pwm_setDutyCycle(duty);
 
 
     //=======================

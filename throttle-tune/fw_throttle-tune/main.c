@@ -10,29 +10,37 @@
 //====================
 //#define DEBUG_PASS_THROUGH //if defined duty/output voltage is set to the same as input voltage (test hardware)
 //--- thresholds (adc values) ---
-#define GAS_PEDAL_MAX 750
-#define GAS_PEDAL_MIN 180 // actual 172
+#define GAS_PEDAL_MAX 670 // actual 660 no force / 697 with force
+#define GAS_PEDAL_MIN 175 // actual 171 - note weird behaviour: when pressing decreases to 160 first then increases to MAX 
 
-#define CONTROLLER_START 250
-#define CONTROLLER_MAX 1023
+#define CONTROLLER_START 250  // 250 starts, 246 stops (TODO: start higher?)
+#define CONTROLLER_MAX 600
 
 //--- levels ---
-#define LEVEL1_MAX_PERCENT 7
-#define LEVEL2_MAX_PERCENT 18
-#define LEVEL3_MAX_PERCENT 95
+#define LEVEL1_MAX_PERCENT 10
+#define LEVEL2_MAX_PERCENT 30
+#define LEVEL3_MAX_PERCENT 100
+
+// TODO handle REVERSE speeds separately
 
 //--- fading ---
 #define DUTY_RAMP_UP_INCREMENT 6 //duty increment per iteration (note depends on cycle duration be aware when e.g. disabling uart)
 #define DUTY_MEMORY_DECREMENT 2 //track/estimate motor rpm/rolling out for quicker resume, smaller value means rolls out longer (resumes higher)
 
+#define DISABLE_RAMP
+#ifdef DISABLE_RAMP
+// redefine increments with larger values to essentially disable / speed up ramps temporarily
+#define DUTY_MEMORY_DECREMENT 100
+#define DUTY_RAMP_UP_INCREMENT 100
+#endif
 
 //--- configure GPIO Pins ---
 // buzzer
-const GPIO_Pin buzzerPin = {PC4, &PORTC, &DDRC, &PINC};
+const GPIO_Pin buzzerPin = {PC3, &PORTC, &DDRC, &PINC};
 
 // speed switch
-const GPIO_Pin speedSwitch1_slow = {PD3, &PORTD, &DDRD, &PIND};
-const GPIO_Pin speedSwitch2_fast = {PD2, &PORTD, &DDRD, &PIND};
+const GPIO_Pin speedSwitch1_slow = {PD2, &PORTD, &DDRD, &PIND};
+const GPIO_Pin speedSwitch2_fast = {PD3, &PORTD, &DDRD, &PIND};
 
 
 
@@ -66,6 +74,32 @@ void Set_PWM_Duty_Cycle(uint16_t duty_cycle)
 
 
 
+// helper function to beep for certain count
+void beep(uint8_t count){
+  static const uint32_t msOn = 100;
+  static const uint32_t msOff = 100;
+  for (int i = 1; i <= count; i++)
+  {
+    GPIO_Set(&buzzerPin);
+    _delay_ms(msOn);
+    GPIO_Clear(&buzzerPin);
+    if (i < count) // prevent unnecessary delay after last beep
+      _delay_ms(msOff);
+  }
+}
+
+
+// helper function to obtain desired max duty percentage according to speed switch position
+uint8_t getMaxPercentageFromSpeedSwitches(){
+    if (GPIO_Read(&speedSwitch1_slow))                // switch at level 1 (slow)
+      return LEVEL1_MAX_PERCENT;
+    else if (GPIO_Read(&speedSwitch2_fast))           // switch at level 3 (fast)
+       return LEVEL3_MAX_PERCENT;
+    else                                  // both low: switch at level 2 (medium)
+       return LEVEL2_MAX_PERCENT;
+}
+
+
 
 int main(void)
 {
@@ -85,35 +119,45 @@ int main(void)
   GPIO_Init(&speedSwitch2_fast, 0);
 
 
-  // variables
+  // --- variables ---
   uint16_t dutyTarget = 0;
   uint16_t duty = 0;
   uint16_t dutyMemory = 0;
 
+  uint8_t maxPercentage = getMaxPercentageFromSpeedSwitches();
+  uint8_t maxPercentagePrevious = maxPercentage;
+
   
   // beep at startup:
-  for (int i = 0; i < 3; i++)
-  {
-    GPIO_Set(&buzzerPin);
-    _delay_ms(100);
-    GPIO_Clear(&buzzerPin);
-    _delay_ms(100);
-  }
+  beep(3);
+
 
 
   while (1)
   {
     //===== speed-switch =====
     // define max motor percentage by speed toggle switch
-    uint8_t maxPercentage;
-    if (GPIO_Read(&speedSwitch1_slow))                // switch at level 1 (slow)
-      maxPercentage = LEVEL1_MAX_PERCENT;
-    else if (GPIO_Read(&speedSwitch2_fast))           // switch at level 3 (fast)
-      maxPercentage = LEVEL3_MAX_PERCENT;
-    else                                  // both low: switch at level 2 (medium)
-      maxPercentage = LEVEL2_MAX_PERCENT;
+    maxPercentage = getMaxPercentageFromSpeedSwitches();
 
-      //TODO: handle reverse switch input
+    // beep if speed max level changed
+    if (maxPercentagePrevious != maxPercentage){
+      maxPercentagePrevious = maxPercentage;
+      switch (maxPercentage){
+        case LEVEL1_MAX_PERCENT:
+          beep(1);
+          break;
+        case LEVEL2_MAX_PERCENT:
+          beep(2);
+          break;
+        case LEVEL3_MAX_PERCENT:
+          beep(3);
+          break;
+        default:
+          break;
+      }
+    }
+
+    //TODO: handle reverse switch input
 
 
     //===== read adc gas pedal =====

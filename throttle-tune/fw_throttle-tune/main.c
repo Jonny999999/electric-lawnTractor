@@ -14,26 +14,22 @@
 #define DEBUG_UART_DEBUG_OUTPUT_ENABLED 0
 #define DEBUG_PASS_THROUGH 0 //if defined duty/output voltage is set to the same as input voltage (test hardware)
 //--- thresholds (adc values) ---
-#define GAS_PEDAL_MAX 670 // actual 660 no force / 697 with force
-#define GAS_PEDAL_MIN 175 // actual 171 - note weird behaviour: when pressing decreases to 160 first then increases to MAX 
+#define GAS_PEDAL_MAX 665 // actual 660 no force / 697 with force
+#define GAS_PEDAL_MIN 178 // actual 171 - note weird behaviour: when pressing decreases to 160 first then increases to MAX 
 
 #define CONTROLLER_START 250  // 250 starts, 246 stops (TODO: start higher?)
 #define CONTROLLER_MAX 600
-
-//--- levels ---
-#define LEVEL1_MAX_PERCENT 10
-#define LEVEL2_MAX_PERCENT 30
-#define LEVEL3_MAX_PERCENT 100
-
-// TODO handle REVERSE speeds separately
+#define CONTROLLER_IDLE_DUTY 190 // keep some voltage when off, to prevent controller from going into fault mode
 
 //--- fading ---
 // track/estimate motor rpm/rolling out for quicker resume (start fading up from memory instead of 0)
 // 
-// 5, 50ms -> 5s to decay from 100% to 0% 
+// 6, 50ms -> 4s to decay from 100% to 0% 
 #define DUTY_MEMORY_DECAY_INTERVAL_MS 50
-#define DUTY_MEMORY_DECAY_STEP 5 // max 1023
+#define DUTY_MEMORY_DECAY_STEP 6 // max 1023
 
+
+#define BEEP_AT_REV_SW_CHANGE 1
 
 //--- configure GPIO Pins ---
 // buzzer
@@ -52,6 +48,7 @@ const GPIO_Pin reverseSwitch = {PC5, &PORTC, &DDRC, &PINC};
 typedef struct {
     const char *name;
     uint8_t maxPercent;     // percent of max possible speed applied at full throttle
+    uint8_t maxPercentReverse;
     uint8_t beepCount;      // count beeped when entering this mode
     uint16_t rampUpStep;    // max duty increment per interval (max 1023)
     uint16_t rampUpIntervalMs; // note: must be larger than cycle time (consider when UART used alot)
@@ -75,36 +72,40 @@ const kettcarConfig_t modeConfigs[NUM_MODES] = {
     {
         .name = "Slow",
         .maxPercent = 15,
+        .maxPercentReverse = 10,
         .beepCount = 1,
-        // 1, 15ms -> 7.5s from 0 to 100% 
+        // 1, 25ms -> 12s from 0 to 100% 
         .rampUpStep = 1,
-        .rampUpIntervalMs = 15,
-        .pedalAverageWindowSize = 0
+        .rampUpIntervalMs = 25,
+        .pedalAverageWindowSize = 50
     },
     {
         .name = "Medium",
-        .maxPercent = 35,
+        .maxPercent = 40,
+        .maxPercentReverse = 30,
         .beepCount = 2,
-        // 1, 10ms -> 5s from 0 to 100%
-        .rampUpStep = 2,
-        .rampUpIntervalMs = 10,
-        .pedalAverageWindowSize = 0
+        // 1, 15ms -> 7s from 0 to 100%
+        .rampUpStep = 1,
+        .rampUpIntervalMs = 15,
+        .pedalAverageWindowSize = 55
     },
     {
         .name = "Fast",
-        .maxPercent = 95,
-        // 3, 10ms -> 1.7s from 0 to 100%
+        .maxPercent = 92,
+        .maxPercentReverse = 50,
+        // 3, 20ms -> 3s from 0 to 100%
         .beepCount = 3,
-        .rampUpStep = 10,
-        .rampUpIntervalMs = 10,
-        .pedalAverageWindowSize = 0
+        .rampUpStep = 3,
+        .rampUpIntervalMs = 20,
+        .pedalAverageWindowSize = 100
     },
     {
         .name = "Sport",
         .maxPercent = 100,
-        .beepCount = 5,
-        // ramp disabled - always set to target immediately
-        .rampUpStep = 1024,
+        .maxPercentReverse = 100,
+        .beepCount = 6,
+        // ramp disabled - increase by large amount every cycle
+        .rampUpStep = 100,
         .rampUpIntervalMs = 0,
         .pedalAverageWindowSize = 100
     }
@@ -112,24 +113,39 @@ const kettcarConfig_t modeConfigs[NUM_MODES] = {
 
 
 
+// custom delay function to prevent error:
+// "__builtin_avr_delay_cycles expects a compile time integer constant"
+void delay_ms(uint32_t ms) {
+    while (ms--) {
+        // Each iteration takes approximately 1 ms
+        _delay_ms(1);
+    }
+}
+
 // helper function to beep for certain count
-void beep(uint8_t count){
-  static const uint32_t msOn = 80;
-  static const uint32_t msOff = 70;
+void beepCustom(uint8_t count, uint32_t msOn, uint32_t msOff){
   for (int i = 1; i <= count; i++)
   {
     GPIO_Set(&buzzerPin);
-    _delay_ms(msOn);
+    delay_ms(msOn);
     GPIO_Clear(&buzzerPin);
     if (i < count) // prevent unnecessary delay after last beep
-      _delay_ms(msOff);
+      delay_ms(msOff);
   }
+}
+
+void beep(uint8_t count){
+  beepCustom(count, 80, 70);
+}
+
+void beepLong(uint8_t count){
+  beepCustom(count, 300, 100);
 }
 
 
 
 // function that evaluates if switch to sport mode sequence is entered and switches to sport mode
-#define MODE_SPORT_ACTIVATION_TIME_WINDOW_MS 1000
+#define MODE_SPORT_ACTIVATION_TIME_WINDOW_MS 3000
 #define MODE_SPORT_ACTIVATION_REVERSE_SW_EDGE_COUNT 3
 void checkForSportModeActivation(void) {
     static uint8_t revToggleCount = 0;
@@ -157,11 +173,18 @@ void checkForSportModeActivation(void) {
         } else {
             revToggleCount++;
             if (revToggleCount >= MODE_SPORT_ACTIVATION_REVERSE_SW_EDGE_COUNT) {
+              _delay_ms(100);
+              if (currentModeIndex == MODE_SPORT) {
+                currentModeIndex = MODE_FAST;
+                beep(modeConfigs[MODE_FAST].beepCount);
+                printf("\nAlready in sportmode -> Switched to mode %s\n", modeConfigs[currentModeIndex].name);
+              } else {
                 currentModeIndex = MODE_SPORT;
-                revToggleCount = 0;
-                timestamp_firstToggle = 0;
                 beep(modeConfigs[MODE_SPORT].beepCount);
                 printf("\nSwitched to mode %s\n", modeConfigs[currentModeIndex].name);
+              }
+                revToggleCount = 0;
+                timestamp_firstToggle = 0;
             }
         }
     }
@@ -172,7 +195,7 @@ void checkForSportModeActivation(void) {
 
 
 // function that updates the currently selected config depending on speed switch position
-#define MODE_CONFIRM_DELAY_MS 500
+#define MODE_CONFIRM_DELAY_MS 500 // only beep after mode is active for that time
 void handleSlowMediumFastModeSwitch(void) {
     static uint8_t lastStableIndex = 255;
     static uint32_t timestamp_lastChange = 0;
@@ -204,9 +227,10 @@ void handleSlowMediumFastModeSwitch(void) {
 
     // Stable long enough for confirmation beep?
     if (currentModeIndex != lastStableIndex && time_get_ms() - timestamp_lastChange > MODE_CONFIRM_DELAY_MS) {
+      if (time_get_ms() > MODE_CONFIRM_DELAY_MS + 500) // prevent beeping directly after startup
         beep(modeConfigs[currentModeIndex].beepCount);
-        printf("\nSwitched to mode %s\n", modeConfigs[currentModeIndex].name);
-        lastStableIndex = currentModeIndex;
+      printf("\nSwitched to mode %s\n", modeConfigs[currentModeIndex].name);
+      lastStableIndex = currentModeIndex;
     }
 }
 
@@ -214,7 +238,7 @@ void handleSlowMediumFastModeSwitch(void) {
 
 
 // Function to calculate the moving average of the last N pedal values
-#define PEDAL_SMOOTHING_MAX_WINDOW_SIZE 512
+#define PEDAL_SMOOTHING_MAX_WINDOW_SIZE 200
 uint16_t GetSmoothedPedalInput(uint16_t newPedalValue, uint8_t windowSize) {
   // Array to store past pedal values
   static uint16_t pedalHistory[PEDAL_SMOOTHING_MAX_WINDOW_SIZE] = {0};
@@ -268,9 +292,10 @@ int main(void)
 
 
   // --- variables ---
-  uint16_t dutyTarget = 0;
-  uint16_t duty = 0;
-  uint16_t dutyMemory = 0;
+  uint16_t dutyTarget = CONTROLLER_IDLE_DUTY;
+  uint16_t duty = CONTROLLER_IDLE_DUTY;
+  uint16_t dutyMemory = CONTROLLER_IDLE_DUTY;
+  bool lastRevSwState = false;
 
   // fading
   static uint32_t timestamp_lastRampUpdate = 0;
@@ -331,8 +356,25 @@ int main(void)
     //==============================
     //===== define target duty =====
     //==============================
-    // calculate max allowed duty according to current level
-    uint16_t dutyRange = (uint32_t)(CONTROLLER_MAX - CONTROLLER_START) * currentConfig->maxPercent / 100;
+    // max duty is different when reversing
+    uint8_t maxPercent;
+    bool currentRevSwState = GPIO_Read(&reverseSwitch);
+
+#if BEEP_AT_REV_SW_CHANGE
+    if (lastRevSwState && !currentRevSwState) // falling edge - reverse just turned off
+      beep(1);
+    else if (!lastRevSwState && currentRevSwState) // rising edge - reverse just turned on
+      beepLong(1);
+    lastRevSwState = currentRevSwState;
+#endif
+
+    if (currentRevSwState)
+      maxPercent =  currentConfig->maxPercentReverse;
+    else
+      maxPercent = currentConfig->maxPercent;
+
+    // calculate max allowed duty according to range
+    uint16_t dutyRange = (uint32_t)(CONTROLLER_MAX - CONTROLLER_START) * maxPercent / 100;
 
 #if DEBUG_PASS_THROUGH
     // 1:1 output (no scaling)
@@ -340,7 +382,7 @@ int main(void)
 #else
     // calculate duty
     if (pedalPercent_x10 == 0)
-      dutyTarget = 0;
+      dutyTarget = CONTROLLER_IDLE_DUTY; // off but maintain some voltage
     else if (pedalPercent_x10 >= 1000)
       dutyTarget = dutyRange + CONTROLLER_START;
     else
@@ -388,6 +430,10 @@ int main(void)
     //==========================
     //===== apply new duty =====
     //==========================
+    // duty should not be lower than idle
+    // TODO remove this, (breaks passthrough, and already limited above with target duty)
+    if (duty < CONTROLLER_IDLE_DUTY)
+      duty = CONTROLLER_IDLE_DUTY;
     pwm_setDutyCycle(duty);
 
 
@@ -397,7 +443,7 @@ int main(void)
 #if DEBUG_UART_DEBUG_OUTPUT_ENABLED
     printf("adcIn=%04d, adcOut=%04d, duty=%04d -- dutyTarget=%04d, dutyMemory=%04d, pedalPercent=%2d, motorPercent=%2d.%d (level/max=%d%%)\n",
            adcInputGasPedal, adcOutput, duty, dutyTarget, dutyMemory,
-           pedalPercent_x10 / 10, motorPercent_x10 / 10, motorPercent_x10 % 10, currentConfig->maxPercent);
+           pedalPercent_x10 / 10, motorPercent_x10 / 10, motorPercent_x10 % 10, maxPercent);
 #endif
 
   } // end while(1)

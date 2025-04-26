@@ -11,9 +11,12 @@
 //====================
 //====== config ======
 //====================
-#define DEBUG_UART_DEBUG_OUTPUT_ENABLED 0
+// debugging
+#define DEBUG_UART_DEBUG_OUTPUT_ENABLED 0 // log several variables for debugging the firmware
 #define DEBUG_PASS_THROUGH 0 //if defined duty/output voltage is set to the same as input voltage (test hardware)
-//--- thresholds (adc values) ---
+#define DEBUG_LOG_CYCLE_SPEED 0 // log main loop cycle count per 1000ms (to determine if set intervals are even realistic)
+
+// thresholds (adc values, determined/tested with debug output)
 #define GAS_PEDAL_MAX 665 // actual 660 no force / 697 with force
 #define GAS_PEDAL_MIN 178 // actual 171 - note weird behaviour: when pressing decreases to 160 first then increases to MAX 
 
@@ -23,13 +26,16 @@
 
 //--- fading ---
 // track/estimate motor rpm/rolling out for quicker resume (start fading up from memory instead of 0)
-// 
 // 6, 50ms -> 4s to decay from 100% to 0% 
 #define DUTY_MEMORY_DECAY_INTERVAL_MS 50
 #define DUTY_MEMORY_DECAY_STEP 6 // max 1023
 
-
+// misc
 #define BEEP_AT_REV_SW_CHANGE 1
+#define PEDAL_SAMPLE_INTERVAL_MS 5 // minimum ms passed between sampling the pedal adc -> significantly affects moving average
+#define PEDAL_SMOOTHING_MAX_WINDOW_SIZE 255 // max history of pedal adc values that can be kept for moving average
+
+
 
 //--- configure GPIO Pins ---
 // buzzer
@@ -67,37 +73,43 @@ uint8_t currentModeIndex = 0;
 #define MODE_SPORT  3
 // note that speed switch also affects / limits the controller (sw connected to controller as well to limit top speed)
 // so maxPercent is not directly comparable between modes (e.g. even all at 100%: already slower in slow mode)
+// configure parameters of the selectable modes:
+
+// helper macros to determine parameters
+#define TIME_FROM_0_TO_100(rampUpStep, rampUpIntervalMs) ((CONTROLLER_MAX - CONTROLLER_START) * rampUpIntervalMs / rampUpStep)
+#define AVERAGE_TIME_MS_TO_WINDOW_SIZE(timeMs) ((timeMs) / PEDAL_SAMPLE_INTERVAL_MS)
+#define MAX_AVERAGE_WINDOW_MS (PEDAL_SMOOTHING_MAX_WINDOW_SIZE * PEDAL_SAMPLE_INTERVAL_MS)
+
 const kettcarConfig_t modeConfigs[NUM_MODES] = {
-  #define TIME_FROM_0_TO_100(rampUpStep, rampUpIntervalMs) ((CONTROLLER_MAX - CONTROLLER_START) * rampUpIntervalMs / rampUpStep)
     {
         .name = "Slow",
         .maxPercent = 15,
         .maxPercentReverse = 10,
         .beepCount = 1,
-        // 1, 25ms -> 12s from 0 to 100% 
+        // 1, 30ms -> 2.2s from 0 to 15% 
         .rampUpStep = 1,
-        .rampUpIntervalMs = 25,
-        .pedalAverageWindowSize = 50
+        .rampUpIntervalMs = 30,
+        .pedalAverageWindowSize = AVERAGE_TIME_MS_TO_WINDOW_SIZE(250) //note: time may not exceed MAX_AVERAGE_WINDOW_MS
     },
     {
         .name = "Medium",
         .maxPercent = 40,
         .maxPercentReverse = 30,
         .beepCount = 2,
-        // 1, 15ms -> 7s from 0 to 100%
+        // 1, 15ms -> 2.9s from 0 to 40%
         .rampUpStep = 1,
         .rampUpIntervalMs = 15,
-        .pedalAverageWindowSize = 55
+        .pedalAverageWindowSize = AVERAGE_TIME_MS_TO_WINDOW_SIZE(250)
     },
     {
         .name = "Fast",
         .maxPercent = 92,
         .maxPercentReverse = 50,
-        // 3, 20ms -> 3s from 0 to 100%
+        // 3, 20ms -> 3s from 0 to 92%
         .beepCount = 3,
         .rampUpStep = 3,
         .rampUpIntervalMs = 20,
-        .pedalAverageWindowSize = 100
+        .pedalAverageWindowSize = AVERAGE_TIME_MS_TO_WINDOW_SIZE(250)
     },
     {
         .name = "Sport",
@@ -107,7 +119,7 @@ const kettcarConfig_t modeConfigs[NUM_MODES] = {
         // ramp disabled - increase by large amount every cycle
         .rampUpStep = 100,
         .rampUpIntervalMs = 0,
-        .pedalAverageWindowSize = 100
+        .pedalAverageWindowSize = AVERAGE_TIME_MS_TO_WINDOW_SIZE(500)
     }
 };
 
@@ -238,7 +250,6 @@ void handleSlowMediumFastModeSwitch(void) {
 
 
 // Function to calculate the moving average of the last N pedal values
-#define PEDAL_SMOOTHING_MAX_WINDOW_SIZE 200
 uint16_t GetSmoothedPedalInput(uint16_t newPedalValue, uint8_t windowSize) {
   // Array to store past pedal values
   static uint16_t pedalHistory[PEDAL_SMOOTHING_MAX_WINDOW_SIZE] = {0};
@@ -292,10 +303,14 @@ int main(void)
 
 
   // --- variables ---
+  uint16_t pedalPercent_x10;
   uint16_t dutyTarget = CONTROLLER_IDLE_DUTY;
   uint16_t duty = CONTROLLER_IDLE_DUTY;
   uint16_t dutyMemory = CONTROLLER_IDLE_DUTY;
   bool lastRevSwState = false;
+  uint32_t timestamp_lastPedalSample = 0;
+  uint32_t timestamp_lastCycleCountLogged = 0;
+  uint32_t cycleCount = 0;
 
   // fading
   static uint32_t timestamp_lastRampUpdate = 0;
@@ -321,19 +336,23 @@ int main(void)
     //======================================
     //===== read + interpret gas-pedal =====
     //======================================
-    uint16_t adcInputGasPedal = ReadChannel(1); // PC5
+    if (time_msPassedSince(timestamp_lastPedalSample) > PEDAL_SAMPLE_INTERVAL_MS){
+      timestamp_lastPedalSample = time_get_ms();
 
-    // calculate gas pedal percentage
-    uint16_t pedalPercent_x10;
-    if (adcInputGasPedal <= GAS_PEDAL_MIN)
-      pedalPercent_x10 = 0;
-    else if (adcInputGasPedal >= GAS_PEDAL_MAX)
-      pedalPercent_x10 = 1000;
-    else
-      pedalPercent_x10 = (uint32_t)(adcInputGasPedal - GAS_PEDAL_MIN) * 1000 / (GAS_PEDAL_MAX - GAS_PEDAL_MIN);
+      // sample adc - TODO: add multisampling?
+      uint16_t adcInputGasPedal = ReadChannel(1); // PC5
 
-    // smooth out pedal input (remove peaks)
-    pedalPercent_x10 = GetSmoothedPedalInput(pedalPercent_x10, currentConfig->pedalAverageWindowSize);
+      // calculate gas pedal percentage
+      if (adcInputGasPedal <= GAS_PEDAL_MIN)
+        pedalPercent_x10 = 0;
+      else if (adcInputGasPedal >= GAS_PEDAL_MAX)
+        pedalPercent_x10 = 1000;
+      else
+        pedalPercent_x10 = (uint32_t)(adcInputGasPedal - GAS_PEDAL_MIN) * 1000 / (GAS_PEDAL_MAX - GAS_PEDAL_MIN);
+
+      // smooth out pedal input (remove peaks)
+      pedalPercent_x10 = GetSmoothedPedalInput(pedalPercent_x10, currentConfig->pedalAverageWindowSize);
+    }
 
     //======================================
     //====== read back output (debug) ======
@@ -445,6 +464,16 @@ int main(void)
            adcInputGasPedal, adcOutput, duty, dutyTarget, dutyMemory,
            pedalPercent_x10 / 10, motorPercent_x10 / 10, motorPercent_x10 % 10, maxPercent);
 #endif
+
+#if DEBUG_LOG_CYCLE_SPEED
+    if (time_msPassedSince(timestamp_lastCycleCountLogged) > 1000){
+      printf("debug: counted %d loop cycles the last 1000ms\n", cycleCount);
+      cycleCount = 0;
+    } else {
+      cycleCount++;
+    }
+#endif
+
 
   } // end while(1)
 

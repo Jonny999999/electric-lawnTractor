@@ -13,16 +13,21 @@
 //====================
 // debugging
 #define DEBUG_UART_DEBUG_OUTPUT_ENABLED 0 // log several variables for debugging the firmware
+#define DEBUG_UART_DEBUG_OUTPUT_INTERVAL_MS 500 // interval the variables are logged (limit rate to have cycles for rest of firmware)
+#define DEBUG_LOG_CYCLE_SPEED 0 // log main loop cycle count per 1000ms (to determine if set intervals are even realistic -> should always be higher than 1000 so we have 1ms resolution)
 #define DEBUG_PASS_THROUGH 0 //if defined duty/output voltage is set to the same as input voltage (test hardware)
-#define DEBUG_LOG_CYCLE_SPEED 0 // log main loop cycle count per 1000ms (to determine if set intervals are even realistic)
 
 // thresholds (adc values, determined/tested with debug output)
-#define GAS_PEDAL_MAX 665 // actual 660 no force / 697 with force
+#define GAS_PEDAL_MAX 630 // actual 660 no force / 697 with force
 #define GAS_PEDAL_MIN 200 // actual 171 - note weird behaviour: when pressing decreases to 160 first then increases to MAX 
 
+// thresholds the out voltage is scaled in between (0-100% speed)
 #define CONTROLLER_START 250  // 250 starts, 246 stops (TODO: start higher?)
-#define CONTROLLER_MAX 600
+#define CONTROLLER_MAX 600 // hard to determine precisely
+
 #define CONTROLLER_IDLE_DUTY 190 // keep some voltage when off, to prevent controller from going into fault mode
+#define CONTROLLER_FULL_SPEED_DUTY 800
+// duty set at 100% target speed (slightly higher than CONTROLLER_MAX ) to be sure to reach actual maximum speed even when CONTROLLER_MAX is slightly too low / we got noise
 
 //--- fading ---
 // track/estimate motor rpm/rolling out for quicker resume (start fading up from memory instead of 0)
@@ -32,7 +37,7 @@
 
 // misc
 #define BEEP_AT_REV_SW_CHANGE 1
-#define PEDAL_SAMPLE_INTERVAL_MS 5 // minimum ms passed between sampling the pedal adc -> significantly affects moving average
+#define PEDAL_SAMPLE_INTERVAL_MS 5 // minimum ms passed between sampling the pedal adc -> significantly affects moving average, but compensated by macro during config
 #define PEDAL_SMOOTHING_MAX_WINDOW_SIZE 255 // max history of pedal adc values that can be kept for moving average
 
 
@@ -84,7 +89,7 @@ const kettcarConfig_t modeConfigs[NUM_MODES] = {
     {
         .name = "Slow",
         .maxPercent = 15,
-        .maxPercentReverse = 5,
+        .maxPercentReverse = 8,
         .beepCount = 1,
         // 1, 30ms -> 2.2s from 0 to 15% 
         .rampUpStep = 1,
@@ -119,7 +124,7 @@ const kettcarConfig_t modeConfigs[NUM_MODES] = {
         // ramp disabled - increase by large amount every cycle
         .rampUpStep = 1024,
         .rampUpIntervalMs = 0,
-        .pedalAverageWindowSize = AVERAGE_TIME_MS_TO_WINDOW_SIZE(350)
+        .pedalAverageWindowSize = AVERAGE_TIME_MS_TO_WINDOW_SIZE(200)
     }
 };
 
@@ -311,6 +316,7 @@ int main(void)
   bool lastRevSwState = false;
   uint32_t timestamp_lastPedalSample = 0;
   uint32_t timestamp_lastCycleCountLogged = 0;
+  uint32_t timestamp_lastDebugOutput = 0;
   uint32_t cycleCount = 0;
 
   // fading
@@ -388,6 +394,11 @@ int main(void)
     lastRevSwState = currentRevSwState;
 #endif
 
+#if DEBUG_PASS_THROUGH
+    // 1:1 output (no scaling)
+    duty = adcInputGasPedal;
+#else
+
     if (currentRevSwState)
       maxPercent =  currentConfig->maxPercentReverse;
     else
@@ -396,10 +407,6 @@ int main(void)
     // calculate max allowed duty according to range
     uint16_t dutyRange = (uint32_t)(CONTROLLER_MAX - CONTROLLER_START) * maxPercent / 100;
 
-#if DEBUG_PASS_THROUGH
-    // 1:1 output (no scaling)
-    duty = adcInputGasPedal;
-#else
     // calculate duty
     if (pedalPercent_x10 == 0)
       dutyTarget = CONTROLLER_IDLE_DUTY; // off but maintain some voltage
@@ -408,7 +415,6 @@ int main(void)
     else
       dutyTarget = (uint32_t)pedalPercent_x10 * dutyRange / 1000 + CONTROLLER_START;
       // duty = (uint32_t)(maxDuty-CONTROLLER_START) *1000 / (GAS_PEDAL_MAX - GAS_PEDAL_MIN)  * (adcInputGasPedal - GAS_PEDAL_MIN) / 1000 + CONTROLLER_START; //without rounding error
-#endif
 
 
     //==================================
@@ -446,14 +452,21 @@ int main(void)
       timestamp_lastDutyMemoryUpdate = time_get_ms();
   }
 
+  // clip actual applied duty to configured controller values:
+  // 1. duty should never be lower than idle (prevent wire defect detection)
+  if (duty < CONTROLLER_IDLE_DUTY) // usually in idle (target duty = 0)
+    duty = CONTROLLER_IDLE_DUTY;
+  // add additional threshold when max duty is desired
+  // 2. set to even higher duty when max-speed is requested to ensure the voltage is certainly exceeded
+  else if (duty >= CONTROLLER_MAX) // usually in sport mode only
+    duty = CONTROLLER_FULL_SPEED_DUTY;
+
+#endif // end of else from #ifdef DEBUG_PASS_THROUGH
+
 
     //==========================
     //===== apply new duty =====
     //==========================
-    // duty should not be lower than idle
-    // TODO remove this, (breaks passthrough, and already limited above with target duty)
-    if (duty < CONTROLLER_IDLE_DUTY)
-      duty = CONTROLLER_IDLE_DUTY;
     pwm_setDutyCycle(duty);
 
 
@@ -461,9 +474,13 @@ int main(void)
     //======= logging =======
     //=======================
 #if DEBUG_UART_DEBUG_OUTPUT_ENABLED
-    printf("adcIn=%04d, adcOut=%04d, duty=%04d -- dutyTarget=%04d, dutyMemory=%04d, pedalPercent=%2d, motorPercent=%2d.%d (level/max=%d%%)\n",
-           adcInputGasPedal, adcOutput, duty, dutyTarget, dutyMemory,
-           pedalPercent_x10 / 10, motorPercent_x10 / 10, motorPercent_x10 % 10, maxPercent);
+    // limite output to set interval
+    if (time_msPassedSince(timestamp_lastDebugOutput) > DEBUG_UART_DEBUG_OUTPUT_INTERVAL_MS){
+      timestamp_lastDebugOutput = time_get_ms();
+      printf("adcIn=%04d, adcOut=%04d, duty=%04d -- dutyTarget=%04d, dutyMemory=%04d, pedalPercent=%2d, motorPercent=%2d.%d (level/max=%d%%)\n",
+             adcInputGasPedal, adcOutput, duty, dutyTarget, dutyMemory,
+             pedalPercent_x10 / 10, motorPercent_x10 / 10, motorPercent_x10 % 10, maxPercent);
+    }
 #endif
 
 #if DEBUG_LOG_CYCLE_SPEED
@@ -473,10 +490,15 @@ int main(void)
     //   - in FULL-THROTTLE: "debug: counted 5306  loop cycles the last 1000ms" (slow mode)
     //   - in FULL-THROTTLE: "debug: counted 5264  loop cycles the last 1000ms" (fast mode)
 
-    // 2. full UART debug output every cycle enabled:
+    // 2. full UART debug output every cycle:
     //   - IDLE/FULL-THROTTLE: "debug: counted 7 loop cycles the last 1000ms"
     //   -> pedal percent increases/decreases very slowly, motor takes ~15s to stop in slow mode
     //  TODO: If cycle count drops below 1000 accurate timing is no longer ensured -> Warn/reduce?
+
+    // 3. full UART debug output every 500ms:
+    //   - IDLE:          debug: counted 861 loop cycles the last 1000ms (medium mode)
+    //   - FULL-THROTTLE: debug: counted 635 loop cycles the last 1000ms (medium mode)
+
 
     if (time_msPassedSince(timestamp_lastCycleCountLogged) > 1000){
       printf("debug: counted %d loop cycles the last 1000ms\n", cycleCount);

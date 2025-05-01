@@ -18,7 +18,7 @@
 
 // thresholds (adc values, determined/tested with debug output)
 #define GAS_PEDAL_MAX 665 // actual 660 no force / 697 with force
-#define GAS_PEDAL_MIN 178 // actual 171 - note weird behaviour: when pressing decreases to 160 first then increases to MAX 
+#define GAS_PEDAL_MIN 200 // actual 171 - note weird behaviour: when pressing decreases to 160 first then increases to MAX 
 
 #define CONTROLLER_START 250  // 250 starts, 246 stops (TODO: start higher?)
 #define CONTROLLER_MAX 600
@@ -28,7 +28,7 @@
 // track/estimate motor rpm/rolling out for quicker resume (start fading up from memory instead of 0)
 // 6, 50ms -> 4s to decay from 100% to 0% 
 #define DUTY_MEMORY_DECAY_INTERVAL_MS 50
-#define DUTY_MEMORY_DECAY_STEP 6 // max 1023
+#define DUTY_MEMORY_DECAY_STEP 4 // max 1023
 
 // misc
 #define BEEP_AT_REV_SW_CHANGE 1
@@ -84,7 +84,7 @@ const kettcarConfig_t modeConfigs[NUM_MODES] = {
     {
         .name = "Slow",
         .maxPercent = 15,
-        .maxPercentReverse = 10,
+        .maxPercentReverse = 5,
         .beepCount = 1,
         // 1, 30ms -> 2.2s from 0 to 15% 
         .rampUpStep = 1,
@@ -117,9 +117,9 @@ const kettcarConfig_t modeConfigs[NUM_MODES] = {
         .maxPercentReverse = 100,
         .beepCount = 6,
         // ramp disabled - increase by large amount every cycle
-        .rampUpStep = 100,
+        .rampUpStep = 1024,
         .rampUpIntervalMs = 0,
-        .pedalAverageWindowSize = AVERAGE_TIME_MS_TO_WINDOW_SIZE(500)
+        .pedalAverageWindowSize = AVERAGE_TIME_MS_TO_WINDOW_SIZE(350)
     }
 };
 
@@ -303,6 +303,7 @@ int main(void)
 
 
   // --- variables ---
+  uint16_t adcInputGasPedal = 0;
   uint16_t pedalPercent_x10;
   uint16_t dutyTarget = CONTROLLER_IDLE_DUTY;
   uint16_t duty = CONTROLLER_IDLE_DUTY;
@@ -340,7 +341,7 @@ int main(void)
       timestamp_lastPedalSample = time_get_ms();
 
       // sample adc - TODO: add multisampling?
-      uint16_t adcInputGasPedal = ReadChannel(1); // PC5
+      adcInputGasPedal = ReadChannel(1); // PC5
 
       // calculate gas pedal percentage
       if (adcInputGasPedal <= GAS_PEDAL_MIN)
@@ -466,9 +467,21 @@ int main(void)
 #endif
 
 #if DEBUG_LOG_CYCLE_SPEED
+    // Results with this option enabled 2025.05.01:
+    // 1. only this output enabled:
+    //   - in IDLE:          "debug: counted 11441 loop cycles the last 1000ms" (slow mode)
+    //   - in FULL-THROTTLE: "debug: counted 5306  loop cycles the last 1000ms" (slow mode)
+    //   - in FULL-THROTTLE: "debug: counted 5264  loop cycles the last 1000ms" (fast mode)
+
+    // 2. full UART debug output every cycle enabled:
+    //   - IDLE/FULL-THROTTLE: "debug: counted 7 loop cycles the last 1000ms"
+    //   -> pedal percent increases/decreases very slowly, motor takes ~15s to stop in slow mode
+    //  TODO: If cycle count drops below 1000 accurate timing is no longer ensured -> Warn/reduce?
+
     if (time_msPassedSince(timestamp_lastCycleCountLogged) > 1000){
       printf("debug: counted %d loop cycles the last 1000ms\n", cycleCount);
       cycleCount = 0;
+      timestamp_lastCycleCountLogged = time_get_ms();
     } else {
       cycleCount++;
     }
